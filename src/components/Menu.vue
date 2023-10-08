@@ -172,15 +172,15 @@ const options = [
       }
     }
   },
-  // {
-  //   label: '个人中心',
-  //   key: 'personal',
-  //   props: {
-  //     onClick: () => {
-  //       to('/personal')
-  //     }
-  //   }
-  // },
+  {
+    label: '个人中心',
+    key: 'updateUser',
+    props: {
+      onClick: () => {
+        to('/updateUser')
+      }
+    }
+  },
   {
     type: 'divider',
     key: 'd1'

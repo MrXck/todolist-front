@@ -12,6 +12,14 @@ const routes = [
     component: () => import('../views/Index'),
     children: [
       {
+        path: 'updateUser',
+        name: 'updateUser',
+        component: () => import('../views/updateUser-page/Account'),
+        meta: {
+          title: '信息修改'
+        }
+      },
+      {
         path: 'home',
         name: 'home',
         component: () => import('../views/Home'),
