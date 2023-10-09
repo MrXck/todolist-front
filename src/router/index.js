@@ -67,6 +67,40 @@ const routes = [
         ]
       },
       {
+        path: 'mind-control',
+        name: 'mind-control',
+        redirect: '/mind-control/mind',
+        meta: {
+          title: '思维导图相关'
+        },
+        children: [
+          {
+            path: 'mind',
+            name: 'mind',
+            component: () => import('../views/mind-page/MindControl.vue'),
+            meta: {
+              title: '思维导图'
+            }
+          },
+          {
+            path: 'mind-edit',
+            name: 'mind-add',
+            component: () => import('../views/mind-page/AddOrEditMind'),
+            meta: {
+              title: '思维导图新增'
+            },
+          },
+          {
+            path: ':id',
+            name: 'mind-edit',
+            component: () => import('../views/mind-page/AddOrEditMind'),
+            meta: {
+              title: '思维导图编辑'
+            }
+          },
+        ]
+      },
+      {
         path: 'time-control',
         name: 'time-control',
         redirect: '/time-control/time',
@@ -87,7 +121,7 @@ const routes = [
     ]
   },
   {
-    path: '/preview/:id',
+    path: '/note-preview/:id',
     name: 'note-preview',
     component: () => import('../views/note-page/NotePreview'),
     meta: {

@@ -136,6 +136,26 @@ const menuOptions = [
     ]
   },
   {
+    label: '思维导图相关',
+    key: '/mind-control',
+    icon: renderIcon(List),
+    children: [
+      {
+        label: () => h(
+            RouterLink,
+            {
+              to: {
+                name: 'mind-control'
+              }
+            },
+            {default: () => "思维导图管理"}
+        ),
+        key: '/mind-control/mind',
+        icon: renderIcon(AppsSharp)
+      },
+    ]
+  },
+  {
     label: '时间管理',
     key: 'time-control',
     icon: renderIcon(SettingsOutline),
