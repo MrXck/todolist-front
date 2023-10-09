@@ -8,6 +8,7 @@
       </n-message-provider>
     </n-loading-bar-provider>
   </n-config-provider>
+  <Player/>
 </template>
 
 
@@ -15,6 +16,7 @@
 import {NLoadingBarProvider, NMessageProvider, NConfigProvider, zhCN, dateZhCN} from 'naive-ui'
 import { DndProvider } from 'vue3-dnd'
 import { HTML5Backend } from "react-dnd-html5-backend"
+import Player from "@/components/Player.vue";
 </script>
 
 <style>

@@ -92,7 +92,7 @@ function isInDateRange(date, startDate, endDate) {
 
 function showPanel(e) {
   mainStore.showPanel = true
-  mainStore.panel.dayDiff = dayjs(date.date).diff(dayjs(new Date()), 'day')
+  mainStore.panel.dayDiff = dayjs(date.date).startOf('day').diff(dayjs().startOf('day'), 'day')
   mainStore.panel.startTime = dayjs(date.date).format(DateFormat)
   mainStore.panel.endTime = dayjs(date.date).format(DateFormat)
   mainStore.panel.title = ''

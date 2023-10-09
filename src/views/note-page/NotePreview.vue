@@ -51,12 +51,24 @@ onMounted(() => {
           tocSelector: '.js-toc',
           // Where to grab the headings to build the table of contents.
           contentSelector: '.js-toc-content',
-          // Which headings to grab inside of the contentSelector element.
+          // Which headings to grab inside the contentSelector element.
           headingSelector: 'h1, h2, h3, h4, h5, h6',
           // For headings inside relative or absolute positioned containers within content.
           hasInnerContainers: true,
         });
-      }, 200)
+
+
+        setTimeout(() => {
+          const items = document.querySelectorAll('.js-toc a')
+          for (let i = 0; i < items.length; i++) {
+            items[i].addEventListener('click', function (e){
+              e.preventDefault()
+            })
+          }
+        })
+
+
+      })
     })
   } else {
     message.error('页面有误')
