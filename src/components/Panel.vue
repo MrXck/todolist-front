@@ -128,6 +128,7 @@ function saveTodo() {
       if (res.code === 0) {
         message.success('操作成功')
         Object.assign(mainStore.dataList.find(item => item.id === mainStore.panel.id), mainStore.panel)
+        mainStore.update()
         mainStore.showPanel = false
       } else {
         message.error(res.msg)
