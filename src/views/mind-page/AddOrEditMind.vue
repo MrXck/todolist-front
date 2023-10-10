@@ -1,6 +1,7 @@
 <script setup>
 import 'jsmind/style/jsmind.css'
 import jsMind from 'jsmind'
+import 'jsmind/draggable-node'
 import {onMounted, ref} from "vue";
 import request from "@/utils/request";
 import {AddMindURL, GetMindByIdURL, UpdateMindURL} from "@/utils/Constant";
