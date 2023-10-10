@@ -3,12 +3,12 @@ import 'jsmind/style/jsmind.css'
 import jsMind from 'jsmind'
 import {onMounted, ref} from "vue";
 import request from "@/utils/request";
-import {AddMindURL, GetMindByIdURL} from "@/utils/Constant";
+import {AddMindURL, GetMindByIdURL, UpdateMindURL} from "@/utils/Constant";
 import {useRoute} from "vue-router";
 import {NScrollbar, NCard, NButton, NInput, NSpace, useMessage} from 'naive-ui'
 
 const uuid = require('uuid')
-
+const type = ref('add')
 const container = ref(null)
 const message = useMessage()
 let jm = null
@@ -46,15 +46,29 @@ const options = {
 }
 
 function save() {
-  console.log(JSON.stringify(jm.get_data('node_tree')))
+  if (mindInfo.value.name === '') {
+    message.error('请输入思维导图名称')
+    return
+  }
+
   mindInfo.value.content = JSON.stringify(jm.get_data('node_tree'))
-  request.post(AddMindURL, mindInfo.value).then(res => {
-    if (res.code === 0) {
-      message.success('操作成功')
-    } else {
-      message.error(res.msg)
-    }
-  })
+  if (type.value === 'add') {
+    request.post(AddMindURL, mindInfo.value).then(res => {
+      if (res.code === 0) {
+        message.success('操作成功')
+      } else {
+        message.error(res.msg)
+      }
+    })
+  } else {
+    request.post(UpdateMindURL, mindInfo.value).then(res => {
+      if (res.code === 0) {
+        message.success('操作成功')
+      } else {
+        message.error(res.msg)
+      }
+    })
+  }
 }
 
 onMounted(() => {
@@ -62,6 +76,7 @@ onMounted(() => {
   jm = new jsMind(options)
 
   if (route.params.id !== null && route.params.id !== undefined) {
+    type.value = 'edit'
     mindInfo.value.id = route.params.id
     request.get(GetMindByIdURL + route.params.id).then(res => {
       if (res.code === 0) {
