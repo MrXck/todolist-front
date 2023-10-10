@@ -11,12 +11,20 @@
             <span style="opacity: 0">1</span>
           </template>
         </n-date-picker>
-        <div class="day-diff" v-if="mainStore.panel.dayDiff < 0" style="color: red">
+        <div class="day-diff" v-if="mainStore.panel.dayDiff < 0 && mainStore.panel.id === 0" style="color: red">
           延期{{ Math.abs(mainStore.panel.dayDiff) }}天
         </div>
-        <div class="day-diff" v-if="mainStore.panel.dayDiff === 0" style="color: rgb(34, 197, 94);">今天</div>
-        <div class="day-diff" v-if="mainStore.panel.dayDiff > 0" style="color: rgb(34, 197, 94);">
+        <div class="day-diff" v-if="mainStore.panel.dayDiff === 0 && mainStore.panel.id === 0" style="color: rgb(34, 197, 94);">今天</div>
+        <div class="day-diff" v-if="mainStore.panel.dayDiff > 0 && mainStore.panel.id === 0" style="color: rgb(34, 197, 94);">
           后面{{ mainStore.panel.dayDiff }}天
+        </div>
+
+        <div class="day-diff" v-if="mainStore.panel.dayDiff < 0 && mainStore.panel.id !== 0" style="color: red">
+          延期{{ Math.abs(mainStore.panel.dayDiff) }}天
+        </div>
+        <div class="day-diff" v-if="mainStore.panel.dayDiff === 0 && mainStore.panel.id !== 0" style="color: rgb(34, 197, 94);">今天截止</div>
+        <div class="day-diff" v-if="mainStore.panel.dayDiff > 0 && mainStore.panel.id !== 0" style="color: rgb(34, 197, 94);">
+          还有{{ mainStore.panel.dayDiff }}天
         </div>
         <n-button text @click="mainStore.showPanel = false">
           <template #icon>

@@ -49,14 +49,8 @@ function showPanel(e) {
   mainStore.showPanel = true
   mainStore.selectedId = data.id
 
-  // mainStore.panel.startTime = data.startTime
-  // mainStore.panel.endTime = data.endTime
-  // mainStore.panel.title = data.title
-  // mainStore.panel.detail = data.detail
-  // mainStore.panel.id = data.id
-
   Object.assign(mainStore.panel, data)
-  mainStore.panel.dayDiff = dayjs(data.startTime).startOf('day').diff(dayjs(new Date()).startOf('day'), 'day')
+  mainStore.panel.dayDiff = dayjs(data.endTime).startOf('day').diff(dayjs(new Date()).startOf('day'), 'day')
   mainStore.calcPosition(e)
 }
 
@@ -72,19 +66,13 @@ onMounted(() => {
       }
     }
     if (data.count > 0 && data.count !== [...parent.children].indexOf(item.value)) {
-      // let html = item.value.cloneNode(true)
-      // html.onclick = showInfo
-      // parent.removeChild(item.value)
-      // item.value = html
       if (parent.childElementCount < data.count + 1) {
         for (let i = 0; i < data.count - parent.childElementCount; i++) {
           let dom = document.createElement('div')
           dom.className = 'calendar-item-item'
           parent.insertBefore(dom, item.value)
         }
-        // parent.appendChild(html)
       } else {
-        // parent.insertBefore(html, parent.children[data.count])
       }
     }
   }
@@ -101,7 +89,6 @@ onMounted(() => {
 .calendar-item-item .content {
   flex: 1;
   background-color: #92ebb3;
-  /*border-radius: .25rem;*/
   overflow: hidden;
   text-overflow: ellipsis;
   padding-left: 4px;
