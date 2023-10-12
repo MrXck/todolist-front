@@ -12,7 +12,8 @@
       data.priority === 2 ? 'second' : '',
       data.priority === 3 ? 'third' : '',
       data.priority === 4 ? 'fourth' : '',
-      mainStore.selectedId === data.id ? 'selected' : ''
+      mainStore.selectedId === data.id ? 'selected' : '',
+      !data.isDone && dayjs(data.endTime).startOf('day').isBefore(dayjs(new Date()).startOf('day')) ? 'delay' : ''
         ]">{{ data.title }}
     </div>
     <Forward :data="data" v-if="data.endTime === fullDate" :full-date="fullDate"/>
@@ -127,5 +128,9 @@ onMounted(() => {
 
 .fourth {
   color: #2080f0;
+}
+
+.delay {
+  background-color: #ffa7a7 !important;
 }
 </style>
