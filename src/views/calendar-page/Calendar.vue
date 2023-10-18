@@ -35,7 +35,7 @@
       <n-grid-item style="padding-left: 8px">周五</n-grid-item>
       <n-grid-item style="padding-left: 8px">周六</n-grid-item>
       <n-grid-item v-for="(item, index) in list">
-        <CalendarItems :index="index" :item="item" :dataList="mainStore.dataList" :key="key"/>
+        <CalendarItems :index="index" :item="item" :dataList="mainStore.dataList[index]" :key="key"/>
       </n-grid-item>
     </n-grid>
     <Panel/>
@@ -93,15 +93,19 @@ function nowMonth() {
 }
 
 function init() {
+  mainStore.dateList = list
+  // getTodo(mainStore)
+
   request.post(GetTodoByMonthURL, {
     startTime: list[0].date,
     endTime: list[list.length - 1].date,
   }).then(res => {
     if (res.code === 0) {
-      mainStore.updateData(res.data.list)
+      mainStore.dataList = res.data.list
+      mainStore.data = res.data.list
+      mainStore.update()
     }
   })
-
 }
 
 onMounted(() => {

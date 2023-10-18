@@ -1,7 +1,7 @@
 <template>
   <n-space vertical>
       <n-input placeholder="请输入标题" v-model:value="note.title" />
-      <div id="editor" v-if="!isLoading">
+      <div id="editor">
         <textarea/>
       </div>
     <n-button @click="save">提交</n-button>
@@ -11,7 +11,7 @@
 
 <script setup>
 import {NSpace, NInput, NButton, useMessage} from 'naive-ui'
-import {nextTick, onMounted, ref} from "vue";
+import {onMounted, ref} from "vue";
 import {useRoute} from "vue-router";
 import {AddNoteURL, BASEURL, GetNoteByIdURL, UpdateNoteURL} from "@/utils/Constant";
 import request from "@/utils/request";
@@ -19,8 +19,6 @@ import request from "@/utils/request";
 const route = useRoute();
 const message = useMessage();
 let editor = null
-const type = ref('add')
-const isLoading = ref(true)
 const note = ref({
   id: '',
   title: '',
@@ -30,15 +28,6 @@ const note = ref({
 
 function save() {
   note.value.detail = editor.getMarkdown()
-  if (type.value === 'add') {
-    request.post(AddNoteURL, note.value).then(res => {
-      if (res.code === 0) {
-        message.success('操作成功')
-      } else {
-        message.error(res.msg)
-      }
-    })
-  } else {
     request.post(UpdateNoteURL, note.value).then(res => {
       if (res.code === 0) {
         message.success('操作成功')
@@ -46,13 +35,10 @@ function save() {
         message.error(res.msg)
       }
     })
-  }
-
 }
 
 onMounted(() => {
   if (route.params.id !== null && route.params.id !== undefined) {
-    type.value = 'edit'
     note.value.id = route.params.id
     request.get(GetNoteByIdURL + route.params.id).then(res => {
       if (res.code === 0) {
@@ -60,22 +46,6 @@ onMounted(() => {
       } else {
         message.error(res.msg)
       }
-      isLoading.value = false
-      nextTick(() => {
-        editor = editormd('editor', {
-          placeholder: '请输入内容',
-          height: 700,
-          path: "/todo/editor-md/lib/",
-          imageUpload: true,
-          imageFormats: ['jpg', 'jpeg', 'png', 'gif'],
-          imageUploadURL: BASEURL + "/file/upload",
-          markdown: note.value.detail
-        })
-      })
-    })
-  } else {
-    isLoading.value = false
-    nextTick(() => {
       editor = editormd('editor', {
         placeholder: '请输入内容',
         height: 700,

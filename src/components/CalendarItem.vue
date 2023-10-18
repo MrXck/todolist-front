@@ -1,7 +1,7 @@
 <template>
   <div :class="[
       'calendar-item-item',
-  ]" ref="item" v-if="show">
+  ]" ref="item" v-if="data !== null">
     <Backend :data="data" v-if="data.startTime === fullDate" :full-date="fullDate"/>
     <div :id="data.id" @click="showPanel" :class="[
       'content',
@@ -18,12 +18,13 @@
     </div>
     <Forward :data="data" v-if="data.endTime === fullDate" :full-date="fullDate"/>
   </div>
+  <div v-else class="calendar-item-item"></div>
 </template>
 
 <script setup>
 import Backend from "@/components/Backend";
 import Forward from "@/components/Forward";
-import {onMounted, ref} from "vue";
+import {ref} from "vue";
 import {useMainStore} from "@/store";
 import {myDayjs as dayjs} from "@/utils/dayUtils";
 
@@ -31,15 +32,10 @@ const mainStore = useMainStore()
 const item = ref(null)
 const {data, fullDate, show} = defineProps({
   data: {
-    type: Object,
     required: true
   },
   fullDate: {
     type: String,
-    required: true
-  },
-  show: {
-    type: Boolean,
     required: true
   },
 })
@@ -49,35 +45,12 @@ function showPanel(e) {
   e.preventDefault()
   mainStore.showPanel = true
   mainStore.selectedId = data.id
-
-  Object.assign(mainStore.panel, data)
-  mainStore.panel.dayDiff = dayjs(data.endTime).startOf('day').diff(dayjs(new Date()).startOf('day'), 'day')
+  const item = mainStore.data.find(item => item.id === data.id)
+  Object.assign(mainStore.panel, item)
+  mainStore.panel.dayDiff = dayjs(item.endTime).startOf('day').diff(dayjs(new Date()).startOf('day'), 'day')
   mainStore.calcPosition(e)
 }
 
-onMounted(() => {
-  if (show) {
-    const parent = item.value.parentElement
-    if ([...parent.children].indexOf(item.value) <= data.count + 1) {
-      let count = data.count - [...parent.children].indexOf(item.value)
-      for (let i = 0; i < count; i++) {
-        let dom = document.createElement('div')
-        dom.className = 'calendar-item-item'
-        parent.insertBefore(dom, item.value)
-      }
-    }
-    if (data.count > 0 && data.count !== [...parent.children].indexOf(item.value)) {
-      if (parent.childElementCount < data.count + 1) {
-        for (let i = 0; i < data.count - parent.childElementCount; i++) {
-          let dom = document.createElement('div')
-          dom.className = 'calendar-item-item'
-          parent.insertBefore(dom, item.value)
-        }
-      } else {
-      }
-    }
-  }
-})
 </script>
 
 <style scoped>

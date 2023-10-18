@@ -24,8 +24,7 @@
     </div>
     <div class="calendar-item-content">
       <n-scrollbar trigger="none">
-        <CalendarItem :full-date="item.date" :data="data" v-for="(data, index) in dataList" :key="index"
-                      :show="isInDateRange(item.date, data.startTime, data.endTime)"/>
+        <CalendarItem v-if="dataList !== undefined" :full-date="item.date" :data="data" v-for="(data, index) in dataList" :key="index"/>
       </n-scrollbar>
     </div>
   </div>

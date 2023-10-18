@@ -34,15 +34,16 @@ const [, drag, preview] = useDrag({
   }),
   end: (_item, monitor) => {
     const result = monitor.getDropResult()
-    if (data.startTime === result.dropTime || dayjs(data.startTime).isBefore(dayjs(result.dropTime))) {
-      let endTime = data.endTime
-      data.endTime = result.dropTime
-      request.post(UpdateTodoByIdURL, data).then(res => {
+    const item = mainStore.data.find(item => item.id === data.id)
+    if (item.startTime === result.dropTime || dayjs(item.startTime).isBefore(dayjs(result.dropTime))) {
+      let endTime = item.endTime
+      item.endTime = result.dropTime
+      request.post(UpdateTodoByIdURL, item).then(res => {
         if (res.code === 0) {
           message.success('操作成功')
-          mainStore.update()
+          mainStore.updateById(item.id, item)
         } else {
-          data.endTime = endTime
+          item.endTime = endTime
           message.error(res.msg)
         }
       })
@@ -54,7 +55,7 @@ const [, drag, preview] = useDrag({
 
 onMounted(() => {
   const emptyImage = getEmptyImage()
-  preview(emptyImage, { captureDraggingState: true })
+  preview(emptyImage, {captureDraggingState: true})
 })
 </script>
 

@@ -2,7 +2,7 @@
   <n-layout>
     <n-layout-header class="header">
       <div class="title" @click="to('/')">
-        todolist
+        待办事项
       </div>
       <div class="bread">
         <n-breadcrumb>

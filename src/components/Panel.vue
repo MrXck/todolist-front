@@ -14,16 +14,22 @@
         <div class="day-diff" v-if="mainStore.panel.dayDiff < 0 && mainStore.panel.id === 0" style="color: red">
           延期{{ Math.abs(mainStore.panel.dayDiff) }}天
         </div>
-        <div class="day-diff" v-if="mainStore.panel.dayDiff === 0 && mainStore.panel.id === 0" style="color: rgb(34, 197, 94);">今天</div>
-        <div class="day-diff" v-if="mainStore.panel.dayDiff > 0 && mainStore.panel.id === 0" style="color: rgb(34, 197, 94);">
+        <div class="day-diff" v-if="mainStore.panel.dayDiff === 0 && mainStore.panel.id === 0"
+             style="color: rgb(34, 197, 94);">今天
+        </div>
+        <div class="day-diff" v-if="mainStore.panel.dayDiff > 0 && mainStore.panel.id === 0"
+             style="color: rgb(34, 197, 94);">
           后面{{ mainStore.panel.dayDiff }}天
         </div>
 
         <div class="day-diff" v-if="mainStore.panel.dayDiff < 0 && mainStore.panel.id !== 0" style="color: red">
           延期{{ Math.abs(mainStore.panel.dayDiff) }}天
         </div>
-        <div class="day-diff" v-if="mainStore.panel.dayDiff === 0 && mainStore.panel.id !== 0" style="color: rgb(34, 197, 94);">今天截止</div>
-        <div class="day-diff" v-if="mainStore.panel.dayDiff > 0 && mainStore.panel.id !== 0" style="color: rgb(34, 197, 94);">
+        <div class="day-diff" v-if="mainStore.panel.dayDiff === 0 && mainStore.panel.id !== 0"
+             style="color: rgb(34, 197, 94);">今天截止
+        </div>
+        <div class="day-diff" v-if="mainStore.panel.dayDiff > 0 && mainStore.panel.id !== 0"
+             style="color: rgb(34, 197, 94);">
           还有{{ mainStore.panel.dayDiff }}天
         </div>
         <n-button text @click="mainStore.showPanel = false">
@@ -115,8 +121,8 @@ function saveTodo() {
     save(mainStore.panel).then(res => {
       if (res.code === 0) {
         mainStore.panel.id = res.data
-        mainStore.dataList.push(Object.assign({}, mainStore.panel))
         message.success('操作成功')
+        mainStore.data.push(JSON.parse(JSON.stringify(mainStore.panel)))
         mainStore.update()
         mainStore.showPanel = false
       } else {
@@ -127,9 +133,7 @@ function saveTodo() {
     update(mainStore.panel).then(res => {
       if (res.code === 0) {
         message.success('操作成功')
-        Object.assign(mainStore.dataList.find(item => item.id === mainStore.panel.id), mainStore.panel)
-        mainStore.update()
-        mainStore.showPanel = false
+        getTodo(mainStore)
       } else {
         message.error(res.msg)
       }
@@ -141,7 +145,7 @@ function remove() {
   removeTodo(mainStore.panel.id).then(res => {
     if (res.code === 0) {
       message.success('操作成功')
-      mainStore.dataList.splice(mainStore.dataList.indexOf(mainStore.dataList.find(item => item.id === mainStore.selectedId)), 1)
+      mainStore.data.splice(mainStore.data.indexOf(mainStore.data.find(item => item.id === mainStore.selectedId)), 1)
       mainStore.update()
       mainStore.showPanel = false
     } else {
@@ -154,8 +158,9 @@ function toggle() {
   toggleDone(mainStore.panel).then(res => {
     if (res.code === 0) {
       message.success('操作成功')
-      let item = mainStore.dataList.find(item => item.id === mainStore.panel.id)
+      let item = mainStore.data.find(item => item.id === mainStore.panel.id)
       item.isDone = !item.isDone
+      mainStore.update()
     } else {
       message.error(res.msg)
     }

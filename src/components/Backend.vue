@@ -34,15 +34,16 @@ const [, drag, preview] = useDrag({
   }),
   end: (_item, monitor) => {
     const result = monitor.getDropResult()
-    if (data.endTime === result.dropTime || dayjs(data.endTime).isAfter(dayjs(result.dropTime))) {
-      let startTime = data.startTime
-      data.startTime = result.dropTime
-      request.post(UpdateTodoByIdURL, data).then(res => {
+    const item = mainStore.data.find(item => item.id === data.id)
+    if (item.endTime === result.dropTime || dayjs(item.endTime).isAfter(dayjs(result.dropTime))) {
+      let startTime = item.startTime
+      item.startTime = result.dropTime
+      request.post(UpdateTodoByIdURL, item).then(res => {
         if (res.code === 0) {
           message.success('操作成功')
-          mainStore.update()
+          mainStore.updateById(item.id, item)
         } else {
-          data.startTime = startTime
+          item.startTime = startTime
           message.error(res.msg)
         }
       })
