@@ -3,7 +3,7 @@
       'calendar-item-item',
   ]" ref="item" v-if="data !== null">
     <Backend :data="data" v-if="data.startTime === fullDate" :full-date="fullDate"/>
-    <div :id="data.id" @click="showPanel" :class="[
+    <div :id="data.id" @click="showPanel" :ref="drag" :class="[
       'content',
       data.startTime === fullDate ? 'left-border' : '',
       data.endTime === fullDate ? 'right-border' : '',
@@ -24,11 +24,17 @@
 <script setup>
 import Backend from "@/components/Backend";
 import Forward from "@/components/Forward";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import {useMainStore} from "@/store";
 import {myDayjs as dayjs} from "@/utils/dayUtils";
+import {useDrag} from "vue3-dnd";
+import request from "@/utils/request";
+import {DateFormat, UpdateTodoByIdURL} from "@/utils/Constant";
+import {getEmptyImage} from "react-dnd-html5-backend";
+import {useMessage} from 'naive-ui'
 
 const mainStore = useMainStore()
+const message = useMessage()
 const item = ref(null)
 const {data, fullDate, show} = defineProps({
   data: {
@@ -51,6 +57,43 @@ function showPanel(e) {
   mainStore.calcPosition(e)
 }
 
+const [, drag, preview] = useDrag({
+  type: 'move',
+  item: () => ({
+    id: data.id,
+    fullDate,
+    data
+  }),
+  end: (_item, monitor) => {
+    const result = monitor.getDropResult()
+    const item = mainStore.data.find(item => item.id === data.id)
+
+    let startTime = dayjs(item.startTime)
+    let endTime = dayjs(item.endTime)
+    let diff = dayjs(result.dropTime).startOf('day').diff(startTime.startOf('day'), 'day')
+    if (diff === 0) {
+      return
+    }
+    item.startTime = startTime.add(diff, 'day').format(DateFormat)
+    item.endTime = endTime.add(diff, 'day').format(DateFormat)
+
+    request.post(UpdateTodoByIdURL, item).then(res => {
+      if (res.code === 0) {
+        message.success('操作成功')
+        mainStore.updateById(item.id, item)
+      } else {
+        item.endTime = endTime.format(DateFormat)
+        item.startTime = startTime.format(DateFormat)
+        message.error(res.msg)
+      }
+    })
+  },
+})
+
+onMounted(() => {
+  const emptyImage = getEmptyImage()
+  preview(emptyImage, {captureDraggingState: true})
+})
 </script>
 
 <style scoped>
@@ -62,7 +105,7 @@ function showPanel(e) {
 
 .calendar-item-item .content {
   flex: 1;
-  background-color: #92ebb3;
+  background-color: #85f594;
   overflow: hidden;
   text-overflow: ellipsis;
   padding-left: 4px;
@@ -80,23 +123,23 @@ function showPanel(e) {
 }
 
 .selected {
-  background-color: #3fe77c !important;
+  filter: brightness(0.92)!important;
 }
 
 .done {
-  background-color: #4edfff !important;
+  background-color: #a6e7ff !important;
 }
 
 .first {
-  color: #d03050;
+  color: #ec49a0;
 }
 
 .second {
-  color: #18a058;
+  color: #8e70ff;
 }
 
 .third {
-  color: #f0a020;
+  color: #e6a23c;
 }
 
 .fourth {
@@ -104,6 +147,6 @@ function showPanel(e) {
 }
 
 .delay {
-  background-color: #ffa7a7 !important;
+  background-color: #ffc8c8 !important;
 }
 </style>

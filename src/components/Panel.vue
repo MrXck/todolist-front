@@ -133,7 +133,7 @@ function saveTodo() {
     update(mainStore.panel).then(res => {
       if (res.code === 0) {
         message.success('操作成功')
-        getTodo(mainStore)
+        mainStore.updateById(mainStore.panel.id, mainStore.panel)
       } else {
         message.error(res.msg)
       }

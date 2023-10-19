@@ -7,6 +7,8 @@
         ]"
        :ref="drop"
        @contextmenu.prevent="showPanel"
+       @touchstart="touchstart"
+       @touchend="touchend"
   >
     <div class="calendar-item-header">
       <n-space justify="space-between">
@@ -57,10 +59,13 @@ const {index, item: date, dataList} = defineProps({
   }
 })
 
+let timer = null
+
 const [, drop] = useDrop({
   accept: [
     'backend',
-    'forward'
+    'forward',
+    'move'
   ],
   drop: () => ({
     // drag 侧可以通过 monitor.getDropResult() 拿到该值
@@ -83,6 +88,18 @@ function judgeHoliday(value) {
 
 function judgeFestival(value) {
   return getFestival(value)
+}
+
+function touchstart(e) {
+  clearTimeout(timer)
+
+  timer = setTimeout(() => {
+    showPanel(e)
+  }, 300)
+}
+
+function touchend(e) {
+  clearTimeout(timer)
 }
 
 function isInDateRange(date, startDate, endDate) {
