@@ -44,8 +44,8 @@
     "not ie 11"
   ],
   "build": {
-    "appId": "com.your-website.your-app",
-    "productName": "ElectronApp",
+    "appId": "com.todo.todolist",
+    "productName": "todolist",
     "copyright": "Copyright © 2021 <your-name>",
     "mac": {
       "category": "public.app-category.utilities"
