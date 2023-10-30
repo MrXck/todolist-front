@@ -13,7 +13,7 @@
 import {NSpace, NInput, NButton, useMessage} from 'naive-ui'
 import {nextTick, onMounted, ref} from "vue";
 import {useRoute} from "vue-router";
-import {AddNoteURL, BASEURL, GetNoteByIdURL, UpdateNoteURL} from "@/utils/Constant";
+import {AddNoteURL, BASEURL, EDITORMD_CONFIG, GetNoteByIdURL, UpdateNoteURL} from "@/utils/Constant";
 import request from "@/utils/request";
 
 const route = useRoute();
@@ -62,29 +62,17 @@ onMounted(() => {
       }
       isLoading.value = false
       nextTick(() => {
-        editor = editormd('editor', {
-          placeholder: '请输入内容',
-          height: 700,
-          path: "/todo/editor-md/lib/",
-          imageUpload: true,
-          imageFormats: ['jpg', 'jpeg', 'png', 'gif'],
-          imageUploadURL: BASEURL + "/file/upload",
-          markdown: note.value.detail
-        })
+        const config = EDITORMD_CONFIG
+        config.markdown = note.value.detail
+        editor = editormd('editor', config)
       })
     })
   } else {
     isLoading.value = false
     nextTick(() => {
-      editor = editormd('editor', {
-        placeholder: '请输入内容',
-        height: 700,
-        path: "/todo/editor-md/lib/",
-        imageUpload: true,
-        imageFormats: ['jpg', 'jpeg', 'png', 'gif'],
-        imageUploadURL: BASEURL + "/file/upload",
-        markdown: note.value.detail
-      })
+      const config = EDITORMD_CONFIG
+      config.markdown = note.value.detail
+      editor = editormd('editor', config)
     })
   }
 })
