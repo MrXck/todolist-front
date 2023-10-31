@@ -72,7 +72,7 @@ import {
   NDropdown,
   useMessage,
 } from 'naive-ui'
-import {h, onMounted, ref, watch} from "vue";
+import {h, onBeforeUnmount, onMounted, ref, watch} from "vue";
 import {RouterLink, useRoute} from "vue-router";
 import {to} from '@/utils/routerUtils'
 import {
@@ -223,8 +223,25 @@ watch(() => route.path, (newVal) => {
 })
 
 onMounted(() => {
+  if (document.documentElement.clientWidth < 1000) {
+    collapsed.value = true
+  }
   user.value = JSON.parse(localStorage.getItem('user'))
+  window.addEventListener('resize', resize)
 })
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', resize)
+})
+
+
+function resize(e) {
+  if (document.documentElement.clientWidth < 768) {
+    collapsed.value = true
+  } else if (document.documentElement.clientWidth > 1000) {
+    collapsed.value = false
+  }
+}
 
 function renderIcon(icon) {
   return () => h(NIcon, null, {default: () => h(icon)});
