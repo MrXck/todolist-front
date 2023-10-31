@@ -133,8 +133,31 @@ export const useMainStore = defineStore('main', {
             }
         },
         calcPosition(e) {
-            const rect = e.target.getBoundingClientRect()
+            const mouseX = e.clientX
+            const mouseY = e.clientY
 
+            let posX = mouseX
+            let posY = mouseY
+
+            const clientWidth = 390
+            const clientHeight = 250
+
+            const documentWidth = document.documentElement.clientWidth
+            const documentHeight = document.documentElement.clientHeight
+
+            if (mouseX > documentWidth - clientWidth) {
+                posX = mouseX - clientWidth
+            }
+
+            if (mouseY > documentHeight - clientHeight) {
+                posY = mouseY - clientHeight
+            }
+
+            this.panelPosition.x = posX - 240
+            this.panelPosition.y = posY - 56
+        },
+        calcPositionBak(e) {
+            const rect = e.target.getBoundingClientRect()
             const width = rect.width
             const height = rect.height === 224 ? rect : 224
 

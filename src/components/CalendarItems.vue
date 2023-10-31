@@ -25,7 +25,7 @@
       </n-space>
     </div>
     <div class="calendar-item-content">
-      <n-scrollbar trigger="none">
+      <n-scrollbar trigger="hover">
         <CalendarItem v-if="dataList !== undefined" :full-date="item.date" :data="data" v-for="(data, index) in dataList" :key="index"/>
       </n-scrollbar>
     </div>
@@ -132,7 +132,8 @@ function showPanel(e) {
 }
 
 .calendar-item {
-  height: 130px;
+  //height: 130px;
+  height: calc((100vh - 64px - 20px - 34px - 10px - 30px) / 6);
 }
 
 .not-left-border {
