@@ -72,6 +72,11 @@ const [, drag, preview] = useDrag({
     let startTime = dayjs(item.startTime)
     let endTime = dayjs(item.endTime)
     let diff = dayjs(result.dropTime).startOf('day').diff(fullDateTime.startOf('day'), 'day')
+
+    if (!mainStore.keyDown && diff === 0) {
+      return
+    }
+    
     if (!mainStore.keyDown) {
       item.startTime = startTime.add(diff, 'day').format(DateFormat)
       item.endTime = endTime.add(diff, 'day').format(DateFormat)
