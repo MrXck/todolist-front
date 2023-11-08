@@ -29,7 +29,7 @@ import {useMainStore} from "@/store";
 import {myDayjs as dayjs} from "@/utils/dayUtils";
 import {useDrag} from "vue3-dnd";
 import request from "@/utils/request";
-import {DateFormat, UpdateTodoByIdURL} from "@/utils/Constant";
+import {AddTodoURL, DateFormat, UpdateTodoByIdURL} from "@/utils/Constant";
 import {getEmptyImage} from "react-dnd-html5-backend";
 import {useMessage} from 'naive-ui'
 
@@ -68,25 +68,39 @@ const [, drag, preview] = useDrag({
     const result = monitor.getDropResult()
     const item = mainStore.data.find(item => item.id === data.id)
 
+    let fullDateTime = dayjs(fullDate)
     let startTime = dayjs(item.startTime)
     let endTime = dayjs(item.endTime)
-    let diff = dayjs(result.dropTime).startOf('day').diff(startTime.startOf('day'), 'day')
-    if (diff === 0) {
-      return
-    }
-    item.startTime = startTime.add(diff, 'day').format(DateFormat)
-    item.endTime = endTime.add(diff, 'day').format(DateFormat)
+    let diff = dayjs(result.dropTime).startOf('day').diff(fullDateTime.startOf('day'), 'day')
+    if (!mainStore.keyDown) {
+      item.startTime = startTime.add(diff, 'day').format(DateFormat)
+      item.endTime = endTime.add(diff, 'day').format(DateFormat)
 
-    request.post(UpdateTodoByIdURL, item).then(res => {
-      if (res.code === 0) {
-        message.success('操作成功')
-        mainStore.updateById(item.id, item)
-      } else {
-        item.endTime = endTime.format(DateFormat)
-        item.startTime = startTime.format(DateFormat)
-        message.error(res.msg)
-      }
-    })
+      request.post(UpdateTodoByIdURL, item).then(res => {
+        if (res.code === 0) {
+          message.success('操作成功')
+          mainStore.updateById(item.id, item)
+        } else {
+          item.endTime = endTime.format(DateFormat)
+          item.startTime = startTime.format(DateFormat)
+          message.error(res.msg)
+        }
+      })
+    } else {
+      const data = Object.assign({}, item)
+      data.startTime = startTime.add(diff, 'day').format(DateFormat)
+      data.endTime = endTime.add(diff, 'day').format(DateFormat)
+      request.post(AddTodoURL, data).then(res => {
+        if (res.code === 0) {
+          data.id = res.data
+          message.success('操作成功')
+          mainStore.data.push(JSON.parse(JSON.stringify(data)))
+          mainStore.update()
+        } else {
+          message.error(res.msg)
+        }
+      })
+    }
   },
 })
 
