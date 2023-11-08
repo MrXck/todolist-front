@@ -14,7 +14,7 @@
         密码
       </n-space>
       <n-space>
-        <n-input v-model:value="user.password" type="password" placeholder="请输入用户名" />
+        <n-input v-model:value="user.password" type="password" placeholder="请输入密码" />
       </n-space>
     </n-space>
     <n-space align="center">
