@@ -105,7 +105,7 @@ const routes = [
         name: 'time-control',
         redirect: '/time-control/time',
         meta: {
-          title: '时间管理'
+          title: '时间相关'
         },
         children: [
           {
@@ -113,7 +113,25 @@ const routes = [
             name: 'time',
             component: () => import('../views/time-page/Time.vue'),
             meta: {
-              title: '时间'
+              title: '时间管理'
+            }
+          },
+        ]
+      },
+      {
+        path: 'taskBox-control',
+        name: 'taskBox-control',
+        redirect: '/taskBox-control/taskBox',
+        meta: {
+          title: '任务箱相关'
+        },
+        children: [
+          {
+            path: 'taskBox',
+            name: 'taskBox',
+            component: () => import('../views/taskBox-page/TaskBox.vue'),
+            meta: {
+              title: '任务箱管理'
             }
           },
         ]

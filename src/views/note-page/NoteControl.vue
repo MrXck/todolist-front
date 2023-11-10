@@ -35,7 +35,7 @@ import {NButton, NDataTable, NSpace, NPagination, useMessage, NInput} from 'naiv
 import {to, toNew} from '@/utils/routerUtils'
 import {h, onMounted, reactive, ref} from "vue";
 import request from "@/utils/request";
-import {GetNoteByPageURL, RemoveNoteByIpURL} from "@/utils/Constant";
+import {GetNoteByPageURL, RemoveNoteByIdURL} from "@/utils/Constant";
 
 
 const data = reactive([])
@@ -145,7 +145,7 @@ function init() {
 }
 
 function deleteById(id) {
-  request.post(RemoveNoteByIpURL + id).then(res => {
+  request.post(RemoveNoteByIdURL + id).then(res => {
     if (res.code === 0) {
       message.success('操作成功')
       init()

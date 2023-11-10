@@ -61,9 +61,7 @@ import {
   NLayout,
   NBreadcrumb,
   NBreadcrumbItem,
-  NLayoutContent,
   NLayoutHeader,
-  NLayoutFooter,
   NLayoutSider,
   NMenu,
   NScrollbar,
@@ -77,9 +75,7 @@ import {RouterLink, useRoute} from "vue-router";
 import {to} from '@/utils/routerUtils'
 import {
   Home,
-  DesktopOutline,
   List,
-  SettingsOutline,
   AppsSharp,
   CalendarOutline,
 } from "@vicons/ionicons5";
@@ -156,9 +152,9 @@ const menuOptions = [
     ]
   },
   {
-    label: '时间管理',
+    label: '时间相关',
     key: 'time-control',
-    icon: renderIcon(SettingsOutline),
+    icon: renderIcon(List),
     children: [
       {
         label: () => h(
@@ -168,9 +164,29 @@ const menuOptions = [
                 name: 'time'
               }
             },
-            {default: () => "时间设置"}
+            {default: () => "时间管理"}
         ),
         key: '/time-control/time',
+        icon: renderIcon(AppsSharp)
+      },
+    ]
+  },
+  {
+    label: '任务箱管理',
+    key: 'taskBox-control',
+    icon: renderIcon(List),
+    children: [
+      {
+        label: () => h(
+            RouterLink,
+            {
+              to: {
+                name: 'taskBox'
+              }
+            },
+            {default: () => "任务箱设置"}
+        ),
+        key: '/taskBox-control/taskBox',
         icon: renderIcon(AppsSharp)
       },
     ]

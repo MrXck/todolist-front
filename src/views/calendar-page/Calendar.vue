@@ -50,7 +50,7 @@ import {ArrowForwardOutline, ArrowBackOutline} from "@vicons/ionicons5";
 import CalendarItems from "@/components/CalendarItems";
 import {useMainStore} from "@/store";
 import Panel from "@/components/Panel";
-import {DateFormat, GetTodoByMonthURL} from "@/utils/Constant";
+import {DateFormat, GetAllTaskBoxURL, GetTodoByMonthURL} from "@/utils/Constant";
 import request from "@/utils/request";
 
 
@@ -108,9 +108,29 @@ function init() {
   })
 }
 
+function initTaskList() {
+  request.get(GetAllTaskBoxURL).then(res => {
+    if (res.code === 0) {
+      mainStore.taskListOptions.length = 0
+      mainStore.taskListOptions.push({
+        label: '请选择所属清单',
+        value: 0
+      })
+      for (let i = 0; i < res.data.taskBoxes.length; i++) {
+        mainStore.taskListOptions.push({
+          label: res.data.taskBoxes[i].name,
+          value: res.data.taskBoxes[i].id
+        })
+      }
+    } else {
+      message.error(res.msg)
+    }
+  })
+}
+
 onMounted(() => {
   initList()
-
+  initTaskList()
   document.querySelector('#calendar').addEventListener('click', (e) => {
     mainStore.showPanel = false
     mainStore.selectedId = 0

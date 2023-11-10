@@ -53,6 +53,11 @@
                 maxRows: 4
               }"
           ></n-input>
+          <n-space>
+            <n-space>
+              <n-select v-model:value="mainStore.panel.taskBoxId" size="small" style="width: 200px" :options="mainStore.taskListOptions"/>
+            </n-space>
+          </n-space>
           <n-space justify="space-between">
             <n-space>
               <n-select v-model:value="mainStore.panel.priority" size="small" style="width: 150px" :options="options"/>
@@ -171,7 +176,7 @@ function toggle() {
 <style scoped>
 .panel {
   width: 366px;
-  height: 234px;
+  height: 268px;
   padding: 8px 12px;
   position: absolute;
   background-color: white;

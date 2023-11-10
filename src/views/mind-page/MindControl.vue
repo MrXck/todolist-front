@@ -35,7 +35,7 @@ import {NButton, NDataTable, NSpace, NPagination, useMessage, NInput} from 'naiv
 import {to, toNew} from '@/utils/routerUtils'
 import {h, onMounted, reactive, ref} from "vue";
 import request from "@/utils/request";
-import {GetMindByPageURL, RemoveMindByIpURL} from "@/utils/Constant";
+import {GetMindByPageURL, RemoveMindByIdURL} from "@/utils/Constant";
 
 
 const data = reactive([])
@@ -133,7 +133,7 @@ function init() {
 }
 
 function deleteById(id) {
-  request.post(RemoveMindByIpURL + id).then(res => {
+  request.post(RemoveMindByIdURL + id).then(res => {
     if (res.code === 0) {
       message.success('操作成功')
       init()

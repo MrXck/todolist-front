@@ -11,6 +11,7 @@ export const useMainStore = defineStore('main', {
             showPanel: false,
             data: [],
             dateList: [],
+            taskListOptions: [],
             panel: {
                 startTime: dayjs(new Date()).format(DateFormat),
                 endTime: dayjs(new Date()).format(DateFormat),
@@ -19,6 +20,7 @@ export const useMainStore = defineStore('main', {
                 detail: '',
                 priority: 5,
                 isDone: false,
+                taskBoxId: 0,
                 id: 0
             },
             panelPosition: {
@@ -141,7 +143,7 @@ export const useMainStore = defineStore('main', {
             let posY = mouseY
 
             const clientWidth = 390
-            const clientHeight = 250
+            const clientHeight = 284
 
             const documentWidth = document.documentElement.clientWidth
             const documentHeight = document.documentElement.clientHeight
@@ -155,7 +157,7 @@ export const useMainStore = defineStore('main', {
             }
 
             this.panelPosition.x = posX - 240
-            this.panelPosition.y = posY - 56
+            this.panelPosition.y = posY - 80
         },
         calcPositionBak(e) {
             const rect = e.target.getBoundingClientRect()
