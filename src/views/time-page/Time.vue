@@ -342,7 +342,7 @@ function resize(e) {
             <n-date-picker disabled type="daterange" v-model:value="panelDate" :shortcuts="shortcuts"
                            @update:value="changePicker"/>
           </n-space>
-          <n-space>
+          <n-space item-style="width: 100%">
             <n-input placeholder="请输入标题" v-model:value="mainStore.panel.title"/>
           </n-space>
           <n-space item-style="width: 100%">
