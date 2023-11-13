@@ -13,7 +13,7 @@ import {
   NSelect,
   NIcon, NCheckbox
 } from 'naive-ui'
-import {customRef, h, onMounted, reactive, ref} from "vue";
+import {customRef, h, onBeforeUnmount, onMounted, reactive, ref} from "vue";
 import request from "@/utils/request";
 import {
   DateFormat,
@@ -29,6 +29,7 @@ import {message} from "@/main";
 
 const timestamp = ref((new Date()).getTime())
 const date = ref((new Date()).getTime())
+const showDetail = ref('48')
 const panelDate = customRef((track, trigger) => {
   return {
     get() {
@@ -192,7 +193,21 @@ function closeModal() {
 
 onMounted(() => {
   init()
+  showDetail.value = document.documentElement.clientWidth >= 768 ? '48' : '100';
+  window.addEventListener('resize', resize)
 })
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', resize)
+})
+
+function resize(e) {
+  if (document.documentElement.clientWidth < 768) {
+    showDetail.value = '100'
+  } else if (document.documentElement.clientWidth > 1000) {
+    showDetail.value = '48'
+  }
+}
 </script>
 
 <template>
@@ -202,7 +217,7 @@ onMounted(() => {
         <n-h2>时间</n-h2>
         <n-date-picker v-model:value="timestamp" @update:value="show"/>
       </n-space>
-      <n-space justify="center" item-style="width: 48%">
+      <n-space justify="center" :item-style="`width: ${showDetail}%`">
         <n-card style="height: 250px" :title="h('span', {style: 'color: red'}, {default: () => '非常重要'})">
           <template #header-extra>
             <n-button @click="showAdd(1)">增加</n-button>
@@ -232,7 +247,7 @@ onMounted(() => {
 
         </n-card>
       </n-space>
-      <n-space justify="center" item-style="width: 48%">
+      <n-space justify="center" :item-style="`width: ${showDetail}%`">
         <n-card style="height: 250px" title="紧急">
           <template #header-extra>
             <n-button @click="showAdd(4)">增加</n-button>
@@ -262,7 +277,7 @@ onMounted(() => {
 
         </n-card>
       </n-space>
-      <n-space justify="center" item-style="width: 48%">
+      <n-space justify="center" :item-style="`width: ${showDetail}%`">
         <n-card style="height: 250px" title="一般">
           <template #header-extra>
             <n-button @click="showAdd(5)">增加</n-button>
