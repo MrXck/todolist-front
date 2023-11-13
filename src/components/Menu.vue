@@ -273,7 +273,7 @@ function renderIcon(icon) {
 }
 
 .title {
-  width: 210px;
+  width: 70px;
   cursor: pointer;
 }
 
