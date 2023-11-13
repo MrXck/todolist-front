@@ -11,18 +11,24 @@
        @touchend="touchend"
   >
     <div class="calendar-item-header">
-      <n-space justify="space-between">
+      <n-space v-if="showDetail" justify="space-between">
         <n-space>
           <span :class="now === item.date ? 'now' : ''">{{ item.date.split('-')[2] }}</span>
-          <span v-if="judgeFestival(item.date).indexOf('节') !== -1 && judgeFestival(item.date).indexOf('补') === -1"
+          <span v-show="showDetail" v-if="judgeFestival(item.date).indexOf('节') !== -1 && judgeFestival(item.date).indexOf('补') === -1"
                 style="color: rgb(156 163 175)">{{ judgeFestival(item.date) }}</span>
-          <span style="color: rgb(156 163 175)">{{ item.nong.dayCn }}</span>
+          <span v-show="showDetail" style="color: rgb(156 163 175)">{{ item.nong.dayCn }}</span>
         </n-space>
-        <n-space>
+        <n-space v-if="showDetail">
           <span v-if="judgeHoliday(item.date)" style="color: rgb(239 68 68)">休</span>
           <span v-if="judgeWorkday(item.date)" style="color: rgb(34 197 94)">班</span>
         </n-space>
       </n-space>
+      <div v-if="!showDetail" style="display: flex;justify-content: center;align-items: center">
+        <span :class="now === item.date ? 'now' : ''">{{ item.date.split('-')[2] }}</span>
+        <span v-show="showDetail" v-if="judgeFestival(item.date).indexOf('节') !== -1 && judgeFestival(item.date).indexOf('补') === -1"
+              style="color: rgb(156 163 175)">{{ judgeFestival(item.date) }}</span>
+        <span v-show="showDetail" style="color: rgb(156 163 175)">{{ item.nong.dayCn }}</span>
+      </div>
     </div>
     <div class="calendar-item-content">
       <n-scrollbar trigger="hover">
@@ -40,6 +46,7 @@ import {myDayjs as dayjs} from "@/utils/dayUtils";
 import {useMainStore} from "@/store";
 import {NScrollbar, NSpace} from 'naive-ui'
 import {DateFormat} from "@/utils/Constant";
+import {onBeforeUnmount, onMounted, ref} from "vue";
 
 const mainStore = useMainStore()
 const now = `${new Date().getFullYear()}-${(new Date().getMonth() + 1).toString().padStart(2, '0')}-${(new Date().getDate()).toString().padStart(2, '0')}`
@@ -60,6 +67,7 @@ const {index, item: date, dataList} = defineProps({
 })
 
 let timer = null
+const showDetail = ref(null)
 
 const [, drop] = useDrop({
   accept: [
@@ -120,6 +128,23 @@ function showPanel(e) {
   mainStore.selectedId = 0
   mainStore.calcPosition(e)
 }
+
+onMounted(() => {
+  showDetail.value = document.documentElement.clientWidth >= 768;
+  window.addEventListener('resize', resize)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', resize)
+})
+
+function resize(e) {
+  if (document.documentElement.clientWidth < 768) {
+    showDetail.value = false
+  } else if (document.documentElement.clientWidth > 1000) {
+    showDetail.value = true
+  }
+}
 </script>
 
 <style scoped>
@@ -150,6 +175,11 @@ function showPanel(e) {
   border-radius: 50%;
   color: white;
   padding: 3px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .calendar-item-header {
