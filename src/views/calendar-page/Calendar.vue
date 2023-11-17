@@ -173,7 +173,7 @@ import request from "@/utils/request";
 
 const date = ref(new Date())
 const calendar = ref(null)
-const showAddModal = ref(true)
+const showAddModal = ref(false)
 const mainStore = useMainStore()
 const list = reactive([])
 const key = ref(0)
