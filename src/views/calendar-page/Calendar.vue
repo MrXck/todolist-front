@@ -281,6 +281,7 @@ function batchGenerateTodo() {
     if (res.code === 0) {
       initList()
       message.success('操作成功')
+      showAddModal.value = false
     } else {
       message.error(res.msg)
     }
