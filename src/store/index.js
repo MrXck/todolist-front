@@ -20,7 +20,7 @@ export const useMainStore = defineStore('main', {
                 detail: '',
                 priority: 5,
                 isDone: false,
-                taskBoxId: 0,
+                taskBoxId: null,
                 id: 0
             },
             panelPosition: {
