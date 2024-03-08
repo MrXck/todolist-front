@@ -19,7 +19,7 @@
         </div>
         <div class="day-diff" v-if="mainStore.panel.dayDiff > 0 && mainStore.panel.id === 0"
              style="color: rgb(34, 197, 94);">
-          后面{{ mainStore.panel.dayDiff }}天
+          还剩{{ mainStore.panel.dayDiff }}天
         </div>
 
         <div class="day-diff" v-if="mainStore.panel.dayDiff < 0 && mainStore.panel.id !== 0" style="color: red">
@@ -30,7 +30,7 @@
         </div>
         <div class="day-diff" v-if="mainStore.panel.dayDiff > 0 && mainStore.panel.id !== 0"
              style="color: rgb(34, 197, 94);">
-          还有{{ mainStore.panel.dayDiff }}天
+          还剩{{ mainStore.panel.dayDiff }}天
         </div>
         <n-button text @click="mainStore.showPanel = false">
           <template #icon>
@@ -42,6 +42,17 @@
       </div>
       <div style="height: 1px; margin: 8px 0;color: rgb(243 244 246 / 1);background-color: rgb(243 244 246 / 1)"></div>
       <div class="panel-body">
+        <n-space justify="space-between" v-if="mainStore.panel.id !== 0" style="margin-bottom: 4px">
+          <n-space justify="start" align="center">
+            <n-button v-if="mainStore.panel.startDoTime === null" size="tiny" @click="startTodo">开始</n-button>
+            <div v-else>开始: {{mainStore.panel.startDoTime.replace('T', ' ')}}</div>
+          </n-space>
+          <n-space justify="start" align="center">
+            <n-button v-if="mainStore.panel.endDoTime === null && mainStore.panel.startDoTime" size="tiny" @click="endTodo">结束</n-button>
+            <div v-if="mainStore.panel.endDoTime !== null && mainStore.panel.startDoTime">结束: {{mainStore.panel.endDoTime.replace('T', ' ')}}</div>
+          </n-space>
+        </n-space>
+        <n-space v-if="mainStore.panel.endDoTime && mainStore.panel.startDoTime">总计: {{period}}</n-space>
         <n-space vertical justify="space-around">
           <n-input placeholder="准备做点什么" v-model:value="mainStore.panel.title"/>
           <n-input
@@ -83,14 +94,41 @@
 import {NInput, NSpace, NDatePicker, NButton, NIcon, NSelect, NCheckbox, useMessage} from 'naive-ui'
 import {useMainStore} from "@/store";
 import {myDayjs as dayjs} from "@/utils/dayUtils";
-import {customRef} from "vue";
-import {DateFormat, options} from "@/utils/Constant";
+import {computed, customRef} from "vue";
+import {DateFormat, DateTimeFormat, EndTodoURL, options, StartTodoURL} from "@/utils/Constant";
 import {removeTodo, save, toggleDone, update,} from '@/utils/apiUtils'
 import {Close, Trash} from "@vicons/ionicons5";
+import request from "@/utils/request";
 
 const mainStore = useMainStore()
 
 const message = useMessage()
+const period = computed(() => {
+  if (mainStore.panel.startDoTime === null || mainStore.panel.endDoTime === null) {
+    return 0
+  }
+  let seconds = dayjs(mainStore.panel.endDoTime).diff(dayjs(mainStore.panel.startDoTime), "seconds")
+  const days = Math.floor(seconds / 86400)
+  let string = ""
+  if (days > 0) {
+    seconds -= days * 86400
+    string += `${days}天 `
+  }
+
+  const hours = Math.floor(seconds / 3600)
+  if (hours > 0) {
+    seconds -= hours * 3600
+    string += `${hours}时 `
+  }
+
+  const minutes = Math.floor(seconds / 60)
+  if (minutes > 0) {
+    seconds -= minutes * 60
+    string += `${minutes}分 `
+  }
+  string += `${seconds}秒`
+  return string
+})
 const panelDate = customRef((track, trigger) => {
   return {
     get() {
@@ -171,12 +209,41 @@ function toggle() {
     }
   })
 }
+
+function startTodo() {
+  request.post(StartTodoURL + mainStore.panel.id).then(res => {
+    if (res.code === 0) {
+      message.success('操作成功')
+      mainStore.panel.startDoTime = dayjs(new Date()).format(DateTimeFormat)
+      let item = mainStore.data.find(item => item.id === mainStore.panel.id)
+      item.startDoTime = dayjs(new Date()).format(DateTimeFormat)
+      mainStore.update()
+    } else {
+      message.error(res.msg)
+    }
+  })
+}
+
+function endTodo() {
+  request.post(EndTodoURL + mainStore.panel.id).then(res => {
+    if (res.code === 0) {
+      message.success('操作成功')
+      mainStore.panel.endDoTime = dayjs(new Date()).format(DateTimeFormat)
+      let item = mainStore.data.find(item => item.id === mainStore.panel.id)
+      item.endDoTime = dayjs(new Date()).format(DateTimeFormat)
+      mainStore.update()
+    } else {
+      message.error(res.msg)
+    }
+  })
+}
 </script>
 
 <style scoped>
 .panel {
   width: 366px;
-  height: 268px;
+  //height: 268px;
+  max-height: 332px;
   padding: 8px 12px;
   position: absolute;
   background-color: white;

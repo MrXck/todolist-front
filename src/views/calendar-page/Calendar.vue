@@ -154,7 +154,7 @@ import {
   NInput,
   NInputNumber
 } from 'naive-ui'
-import {onMounted, reactive, ref, watch} from "vue"
+import {onBeforeUnmount, onMounted, reactive, ref, watch} from "vue"
 import {getNextMonthDays, myDayjs as dayjs} from "@/utils/dayUtils";
 import {ArrowForwardOutline, ArrowBackOutline, Close} from "@vicons/ionicons5";
 import CalendarItems from "@/components/CalendarItems";
@@ -289,13 +289,19 @@ function batchGenerateTodo() {
 
 }
 
+const click = (e) => {
+  mainStore.showPanel = false
+  mainStore.selectedId = 0
+}
+
 onMounted(() => {
   initList()
   initTaskList()
-  document.querySelector('#calendar').addEventListener('click', (e) => {
-    mainStore.showPanel = false
-    mainStore.selectedId = 0
-  })
+  document.querySelector('#calendar').addEventListener('click', click)
+})
+
+onBeforeUnmount(() => {
+  document.querySelector('#calendar').removeEventListener('click', click)
 })
 </script>
 

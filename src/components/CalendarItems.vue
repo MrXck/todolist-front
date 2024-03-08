@@ -125,6 +125,8 @@ function showPanel(e) {
   mainStore.panel.priority = 5
   mainStore.panel.isDone = false
   mainStore.panel.taskBoxId = null
+  mainStore.panel.startDoTime = null
+  mainStore.panel.endDoTime = null
   mainStore.selectedId = 0
   mainStore.calcPosition(e)
 }

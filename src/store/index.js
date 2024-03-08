@@ -21,7 +21,9 @@ export const useMainStore = defineStore('main', {
                 priority: 5,
                 isDone: false,
                 taskBoxId: null,
-                id: 0
+                id: 0,
+                startDoTime: null,
+                endDoTime: null,
             },
             panelPosition: {
                 x: 0,
@@ -143,7 +145,9 @@ export const useMainStore = defineStore('main', {
             let posY = mouseY
 
             const clientWidth = 390
-            const clientHeight = 284
+            // const clientWidth = document.querySelector('.panel').width
+            const clientHeight = 348
+            // const clientHeight = document.querySelector('.panel').height
 
             const documentWidth = document.documentElement.clientWidth
             const documentHeight = document.documentElement.clientHeight
