@@ -8,10 +8,10 @@
       data.startTime === fullDate ? 'left-border' : '',
       data.endTime === fullDate ? 'right-border' : '',
       data.isDone ? 'done' : '',
-      data.priority === 1 ? 'first' : '',
-      data.priority === 2 ? 'second' : '',
-      data.priority === 3 ? 'third' : '',
-      data.priority === 4 ? 'fourth' : '',
+      data.priority === 1 ? 'first bold' : '',
+      data.priority === 2 ? 'second bold' : '',
+      data.priority === 3 ? 'third bold' : '',
+      data.priority === 4 ? 'fourth bold' : '',
       mainStore.selectedId === data.id ? 'selected' : '',
       !data.isDone && dayjs(data.endTime).startOf('day').isBefore(dayjs(new Date()).startOf('day')) ? 'delay' : ''
         ]">{{ data.title }}
@@ -167,5 +167,9 @@ onMounted(() => {
 
 .delay {
   background-color: #ffc8c8 !important;
+}
+
+.bold {
+  font-weight: bold;
 }
 </style>
