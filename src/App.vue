@@ -24,12 +24,16 @@ const mainStore = useMainStore()
 function keyDown(e) {
   if (e.keyCode === 17) {
     mainStore.keyDown = true
+  } else if (e.keyCode === 18) {
+    mainStore.altDown = true
   }
 }
 
 function keyUp(e) {
   if (e.keyCode === 17) {
     mainStore.keyDown = false
+  } else if (e.keyCode === 18) {
+    mainStore.altDown = false
   }
 }
 

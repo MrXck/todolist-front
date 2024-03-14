@@ -32,6 +32,7 @@ import request from "@/utils/request";
 import {AddTodoURL, DateFormat, UpdateTodoByIdURL} from "@/utils/Constant";
 import {getEmptyImage} from "react-dnd-html5-backend";
 import {useMessage} from 'naive-ui'
+import {removeTodo} from "@/utils/apiUtils";
 
 const mainStore = useMainStore()
 const message = useMessage()
@@ -47,14 +48,27 @@ const {data, fullDate, show} = defineProps({
 })
 
 function showPanel(e) {
-  e.stopPropagation()
-  e.preventDefault()
-  mainStore.showPanel = true
-  mainStore.selectedId = data.id
-  const item = mainStore.data.find(item => item.id === data.id)
-  Object.assign(mainStore.panel, item)
-  mainStore.panel.dayDiff = dayjs(item.endTime).startOf('day').diff(dayjs(new Date()).startOf('day'), 'day')
-  mainStore.calcPosition(e)
+  if (mainStore.altDown) {
+    removeTodo(data.id).then(res => {
+      if (res.code === 0) {
+        message.success('操作成功')
+        mainStore.data.splice(mainStore.data.indexOf(mainStore.data.find(item => item.id === data.id)), 1)
+        mainStore.update()
+        mainStore.showPanel = false
+      } else {
+        message.error(res.msg)
+      }
+    })
+  } else {
+    e.stopPropagation()
+    e.preventDefault()
+    mainStore.showPanel = true
+    mainStore.selectedId = data.id
+    const item = mainStore.data.find(item => item.id === data.id)
+    Object.assign(mainStore.panel, item)
+    mainStore.panel.dayDiff = dayjs(item.endTime).startOf('day').diff(dayjs(new Date()).startOf('day'), 'day')
+    mainStore.calcPosition(e)
+  }
 }
 
 const [, drag, preview] = useDrag({

@@ -31,7 +31,8 @@ export const useMainStore = defineStore('main', {
                 y: 0
             },
             selectedId: 0,
-            keyDown: false
+            keyDown: false,
+            altDown: false,
         }
     },
     // 会缓存 只会调用一次
