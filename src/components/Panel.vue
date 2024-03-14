@@ -42,6 +42,10 @@
       </div>
       <div style="height: 1px; margin: 8px 0;color: rgb(243 244 246 / 1);background-color: rgb(243 244 246 / 1)"></div>
       <div class="panel-body">
+        <n-space align="center">
+          预计开始时间
+          <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.predictTime" placeholder="预计开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
+        </n-space>
         <n-space justify="space-between" v-if="mainStore.panel.id !== 0" style="margin-bottom: 4px">
           <n-space justify="start" align="center">
             <n-button v-if="mainStore.panel.startDoTime === null" size="tiny" @click="startTodo">开始</n-button>
@@ -91,7 +95,7 @@
 </template>
 
 <script setup>
-import {NInput, NSpace, NDatePicker, NButton, NIcon, NSelect, NCheckbox, useMessage} from 'naive-ui'
+import {NInput, NSpace, NDatePicker, NButton, NIcon, NSelect, NCheckbox, NTimePicker, useMessage} from 'naive-ui'
 import {useMainStore} from "@/store";
 import {myDayjs as dayjs} from "@/utils/dayUtils";
 import {computed, customRef} from "vue";
@@ -243,7 +247,7 @@ function endTodo() {
 .panel {
   width: 366px;
   //height: 268px;
-  max-height: 332px;
+  max-height: 362px;
   padding: 8px 12px;
   position: absolute;
   background-color: white;

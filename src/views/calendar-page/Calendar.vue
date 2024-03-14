@@ -63,27 +63,19 @@
         <n-space vertical>
           <n-space>
             <n-space>
-              开始日期：
+              日期范围：
             </n-space>
             <n-space>
               <n-date-picker v-model:value="addData.timeRange" type="daterange" placeholder="开始日期"/>
             </n-space>
-<!--            <n-space vertical>-->
-<!--              <n-space>-->
-<!--                开始日期：-->
-<!--              </n-space>-->
-<!--              <n-space>-->
-<!--                <n-date-picker v-model:value="addData.startTime" type="date" placeholder="开始日期"/>-->
-<!--              </n-space>-->
-<!--            </n-space>-->
-<!--            <n-space vertical>-->
-<!--              <n-space>-->
-<!--                结束日期：-->
-<!--              </n-space>-->
-<!--              <n-space>-->
-<!--                <n-date-picker v-model:value="addData.endTime" type="date" placeholder="结束日期"/>-->
-<!--              </n-space>-->
-<!--            </n-space>-->
+          </n-space>
+          <n-space align="center">
+            <n-space>
+              预计开始时间：
+            </n-space>
+            <n-space>
+              <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="addData.predictTime" default-formatted-value="00:00:00" placeholder="预计开始时间"/>
+            </n-space>
           </n-space>
           <n-space>
             <n-space vertical>
@@ -152,7 +144,8 @@ import {
   NSelect,
   useMessage,
   NInput,
-  NInputNumber
+  NInputNumber,
+  NTimePicker
 } from 'naive-ui'
 import {onBeforeUnmount, onMounted, reactive, ref, watch} from "vue"
 import {getNextMonthDays, myDayjs as dayjs} from "@/utils/dayUtils";
@@ -187,6 +180,7 @@ const addData = ref({
   taskBoxId: null,
   priority: 5,
   duration: 1,
+  predictTime: null,
 })
 
 

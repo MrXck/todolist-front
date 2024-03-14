@@ -24,6 +24,7 @@ export const useMainStore = defineStore('main', {
                 id: 0,
                 startDoTime: null,
                 endDoTime: null,
+                predictTime: null,
             },
             panelPosition: {
                 x: 0,
@@ -146,7 +147,7 @@ export const useMainStore = defineStore('main', {
 
             const clientWidth = 390
             // const clientWidth = document.querySelector('.panel').width
-            const clientHeight = 348
+            const clientHeight = 362
             // const clientHeight = document.querySelector('.panel').height
 
             const documentWidth = document.documentElement.clientWidth
