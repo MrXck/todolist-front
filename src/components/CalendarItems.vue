@@ -121,7 +121,8 @@ function showPanel(e) {
   mainStore.panel.endTime = dayjs(date.date).format(DateFormat)
   mainStore.panel.title = ''
   mainStore.panel.detail = ''
-  mainStore.panel.predictTime = null
+  mainStore.panel.predictTime = "00:00:00"
+  mainStore.panel.enableEmail = false
   mainStore.panel.id = 0
   mainStore.panel.priority = 5
   mainStore.panel.isDone = false

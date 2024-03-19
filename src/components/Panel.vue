@@ -42,9 +42,15 @@
       </div>
       <div style="height: 1px; margin: 8px 0;color: rgb(243 244 246 / 1);background-color: rgb(243 244 246 / 1)"></div>
       <div class="panel-body">
-        <n-space align="center">
-          预计开始时间
-          <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.predictTime" placeholder="预计开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
+        <n-space align="center" style="margin-bottom: 4px">
+          <n-space align="center" justify="center">
+            邮件提醒
+            <n-switch v-model:value="mainStore.panel.enableEmail"/>
+          </n-space>
+          <n-space v-if="mainStore.panel.enableEmail" align="center" justify="center">
+            邮件提醒时间
+            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.predictTime" placeholder="预计开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
+          </n-space>
         </n-space>
         <n-space justify="space-between" v-if="mainStore.panel.id !== 0" style="margin-bottom: 4px">
           <n-space justify="start" align="center">
@@ -95,7 +101,7 @@
 </template>
 
 <script setup>
-import {NInput, NSpace, NDatePicker, NButton, NIcon, NSelect, NCheckbox, NTimePicker, useMessage} from 'naive-ui'
+import {NInput, NSpace, NDatePicker, NButton, NIcon, NSelect, NCheckbox, NTimePicker, useMessage, NSwitch} from 'naive-ui'
 import {useMainStore} from "@/store";
 import {myDayjs as dayjs} from "@/utils/dayUtils";
 import {computed, customRef} from "vue";

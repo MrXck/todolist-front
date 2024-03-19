@@ -1,6 +1,6 @@
 <template>
   <div id="calendar" style="position: relative">
-    <n-space justify="flex-end">
+    <n-space justify="end">
       <n-space>
         <n-date-picker v-model:value="date" type="month" @update:value="show"/>
       </n-space>
@@ -69,9 +69,17 @@
               <n-date-picker v-model:value="addData.timeRange" type="daterange" placeholder="开始日期"/>
             </n-space>
           </n-space>
-          <n-space align="center">
+          <n-space>
             <n-space>
-              预计开始时间：
+              开启邮件提醒：
+            </n-space>
+            <n-space>
+              <n-switch v-model:value="addData.enableEmail"></n-switch>
+            </n-space>
+          </n-space>
+          <n-space v-show="addData.enableEmail" align="center">
+            <n-space>
+              邮件提醒时间：
             </n-space>
             <n-space>
               <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="addData.predictTime" default-formatted-value="00:00:00" placeholder="预计开始时间"/>
@@ -145,7 +153,7 @@ import {
   useMessage,
   NInput,
   NInputNumber,
-  NTimePicker
+  NTimePicker, NSwitch
 } from 'naive-ui'
 import {onBeforeUnmount, onMounted, reactive, ref, watch} from "vue"
 import {getNextMonthDays, myDayjs as dayjs} from "@/utils/dayUtils";
@@ -180,7 +188,8 @@ const addData = ref({
   taskBoxId: null,
   priority: 5,
   duration: 1,
-  predictTime: null,
+  predictTime: "00:00:00",
+  enableEmail: false,
 })
 
 
