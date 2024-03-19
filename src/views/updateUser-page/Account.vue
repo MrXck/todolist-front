@@ -2,7 +2,7 @@
 <n-card>
   <n-space vertical>
     <n-space align="center">
-      <n-space item-style="width: 50px">
+      <n-space item-style="width: 100px">
         用户名
       </n-space>
       <n-space>
@@ -10,7 +10,7 @@
       </n-space>
     </n-space>
     <n-space align="center">
-      <n-space item-style="width: 50px">
+      <n-space item-style="width: 100px">
         密码
       </n-space>
       <n-space>
@@ -18,11 +18,19 @@
       </n-space>
     </n-space>
     <n-space align="center">
-      <n-space item-style="width: 50px">
+      <n-space item-style="width: 100px">
         邮箱
       </n-space>
       <n-space>
         <n-input v-model:value="user.email" placeholder="请输入邮箱" />
+      </n-space>
+    </n-space>
+    <n-space>
+      <n-space item-style="width: 100px">
+        开启邮件提醒
+      </n-space>
+      <n-space>
+        <n-switch v-model:value="user.enableEmail"></n-switch>
       </n-space>
     </n-space>
     <n-space>
@@ -33,7 +41,7 @@
 </template>
 
 <script setup>
-import {NCard, NSpace, NInput, NButton, useMessage} from 'naive-ui'
+import {NCard, NSpace, NInput, NButton, useMessage, NSwitch} from 'naive-ui'
 import {ref} from "vue";
 import request from "@/utils/request";
 import {UpdateUserURL} from "@/utils/Constant";
@@ -44,7 +52,8 @@ const emailReg = new RegExp(/^(?=.{1,64}@)[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*@[A
 const user = ref({
   username: userInfo.username,
   password: '',
-  email: userInfo.email
+  email: userInfo.email,
+  enableEmail: (!(userInfo.enableEmail === null || userInfo.enableEmail === undefined)),
 })
 
 function update() {
