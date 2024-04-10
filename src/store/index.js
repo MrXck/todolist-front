@@ -26,6 +26,8 @@ export const useMainStore = defineStore('main', {
                 endDoTime: null,
                 predictTime: "00:00:00",
                 enableEmail: false,
+                noticeType: 1,
+                cronNum: null,
             },
             panelPosition: {
                 x: 0,

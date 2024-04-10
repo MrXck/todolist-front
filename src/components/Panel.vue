@@ -47,8 +47,15 @@
             邮件提醒
             <n-switch v-model:value="mainStore.panel.enableEmail"/>
           </n-space>
-          <n-space v-if="mainStore.panel.enableEmail" align="center" justify="center">
-            邮件提醒时间
+        </n-space>
+        <n-space v-if="mainStore.panel.enableEmail" align="center">
+          <n-space align="center">
+            提醒类型
+            <n-select size="small" :options="NoticeTypeOptions" v-model:value="mainStore.panel.noticeType" style="width: 100px"></n-select>
+            <n-select v-show="NoticeTypeOptions.find(item => item.value === mainStore.panel.noticeType).child.length !== 0" size="small" :options="NoticeTypeOptions.find(item => item.value === mainStore.panel.noticeType).child" v-model:value="mainStore.panel.cronNum" style="width: 100px"></n-select>
+          </n-space>
+          <n-space justify="center">
+            提醒时间
             <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.predictTime" placeholder="预计开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
           </n-space>
         </n-space>
@@ -105,7 +112,15 @@ import {NInput, NSpace, NDatePicker, NButton, NIcon, NSelect, NCheckbox, NTimePi
 import {useMainStore} from "@/store";
 import {myDayjs as dayjs} from "@/utils/dayUtils";
 import {computed, customRef} from "vue";
-import {DateFormat, DateTimeFormat, EndTodoURL, options, StartTodoURL} from "@/utils/Constant";
+import {
+  DateFormat,
+  DateTimeFormat,
+  EndTodoURL,
+  GenerateOptions,
+  NoticeTypeOptions,
+  options,
+  StartTodoURL
+} from "@/utils/Constant";
 import {removeTodo, save, toggleDone, update,} from '@/utils/apiUtils'
 import {Close, Trash} from "@vicons/ionicons5";
 import request from "@/utils/request";
@@ -252,8 +267,7 @@ function endTodo() {
 <style scoped>
 .panel {
   width: 366px;
-  //height: 268px;
-  max-height: 362px;
+  max-height: 386px;
   padding: 8px 12px;
   position: absolute;
   background-color: white;

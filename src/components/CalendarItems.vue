@@ -129,6 +129,8 @@ function showPanel(e) {
   mainStore.panel.taskBoxId = null
   mainStore.panel.startDoTime = null
   mainStore.panel.endDoTime = null
+  mainStore.panel.noticeType = 1
+  mainStore.panel.cronNum = null
   mainStore.selectedId = 0
   mainStore.calcPosition(e)
 }

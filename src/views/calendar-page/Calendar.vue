@@ -77,7 +77,12 @@
               <n-switch v-model:value="addData.enableEmail"></n-switch>
             </n-space>
           </n-space>
-          <n-space v-show="addData.enableEmail" align="center">
+          <n-space v-show="addData.enableEmail" justify="center" vertical>
+            <n-space align="center">
+              提醒类型
+              <n-select :options="NoticeTypeOptions" v-model:value="addData.noticeType" style="width: 100px"></n-select>
+              <n-select v-show="NoticeTypeOptions.find(item => item.value === addData.noticeType).child.length !== 0" :options="NoticeTypeOptions.find(item => item.value === addData.noticeType).child" v-model:value="addData.cronNum" style="width: 100px"></n-select>
+            </n-space>
             <n-space>
               邮件提醒时间：
             </n-space>
@@ -167,7 +172,7 @@ import {
   GetTodoByMonthURL,
   GenerateOptions,
   GenerateTypeDay,
-  BatchGenerateTodoURL, options
+  BatchGenerateTodoURL, options, NoticeTypeOptions
 } from "@/utils/Constant";
 import request from "@/utils/request";
 
@@ -190,6 +195,8 @@ const addData = ref({
   duration: 1,
   predictTime: "00:00:00",
   enableEmail: false,
+  noticeType: 1,
+  cronNum: null,
 })
 
 
