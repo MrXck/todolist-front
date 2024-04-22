@@ -2570,9 +2570,9 @@ chalk@^4.0.0, chalk@^4.0.2, chalk@^4.1.0, chalk@^4.1.2:
     supports-color "^7.1.0"
 
 chinese-workday@^1.9.0:
-  version "1.9.0"
-  resolved "https://registry.npmmirror.com/chinese-workday/-/chinese-workday-1.9.0.tgz"
-  integrity sha512-qXxFBFpMQzCaHOBs4VnVEVnTySWkCfxE/1fSbibtrJIB+qnjioDrjgQtXAzCvaqKndhYKS6PVl4BPtv/gMCO+w==
+  version "1.10.0"
+  resolved "https://registry.npmmirror.com/chinese-workday/-/chinese-workday-1.10.0.tgz#a20d0c75681a3e856d2fd81ca0904386614c6fb0"
+  integrity sha512-wHar+6Qd/lPDHYHdnCrb1ZJvj8Kjyy3lPrjQEqtlWqw9TRlRLTWnPUi/esB5OJFbEedYGJEP5o5zrrp4wLBCVA==
 
 chokidar@^3.5.3:
   version "3.5.3"
