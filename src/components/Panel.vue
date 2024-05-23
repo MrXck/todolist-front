@@ -1,5 +1,5 @@
 <template>
-  <transition name="fade">
+  <transition name="fade" v-if="!isMobile()">
     <div @click.stop.prevent class="panel" v-show="mainStore.showPanel"
          :style="`top: ${mainStore.panelPosition.y}px;left: ${mainStore.panelPosition.x}px;`">
       <div class="panel-header">
@@ -105,10 +105,132 @@
       </div>
     </div>
   </transition>
+  <n-modal v-if="isMobile()" v-model:show="mainStore.showPanel">
+    <n-card
+        :bordered="false"
+        size="small"
+        role="dialog"
+        aria-modal="true">
+      <div class="panel-header">
+        <n-checkbox v-show="mainStore.panel.id !== 0" size="large" v-model:checked="mainStore.panel.isDone"
+                    @update:checked="toggle" style="margin-right: 4px"></n-checkbox>
+        <n-date-picker type="daterange" style="width: 70%" :default-value="mainStore.panelDate"
+                       v-model:value="panelDate" :shortcuts="shortcuts" @update:value="changePicker">
+          <template #date-icon>
+            <span style="opacity: 0">1</span>
+          </template>
+        </n-date-picker>
+        <div class="day-diff" v-if="mainStore.panel.dayDiff < 0 && mainStore.panel.id === 0" style="color: red">
+          延期{{ Math.abs(mainStore.panel.dayDiff) }}天
+        </div>
+        <div class="day-diff" v-if="mainStore.panel.dayDiff === 0 && mainStore.panel.id === 0"
+             style="color: rgb(34, 197, 94);">今天
+        </div>
+        <div class="day-diff" v-if="mainStore.panel.dayDiff > 0 && mainStore.panel.id === 0"
+             style="color: rgb(34, 197, 94);">
+          还剩{{ mainStore.panel.dayDiff }}天
+        </div>
+
+        <div class="day-diff" v-if="mainStore.panel.dayDiff < 0 && mainStore.panel.id !== 0" style="color: red">
+          延期{{ Math.abs(mainStore.panel.dayDiff) }}天
+        </div>
+        <div class="day-diff" v-if="mainStore.panel.dayDiff === 0 && mainStore.panel.id !== 0"
+             style="color: rgb(34, 197, 94);">今天截止
+        </div>
+        <div class="day-diff" v-if="mainStore.panel.dayDiff > 0 && mainStore.panel.id !== 0"
+             style="color: rgb(34, 197, 94);">
+          还剩{{ mainStore.panel.dayDiff }}天
+        </div>
+        <n-button text @click="mainStore.showPanel = false">
+          <template #icon>
+            <n-icon>
+              <Close/>
+            </n-icon>
+          </template>
+        </n-button>
+      </div>
+      <div style="height: 1px; margin: 8px 0;color: rgb(243 244 246 / 1);background-color: rgb(243 244 246 / 1)"></div>
+      <div class="panel-body">
+        <n-space align="center" style="margin-bottom: 4px">
+          <n-space align="center" justify="center">
+            邮件提醒
+            <n-switch v-model:value="mainStore.panel.enableEmail"/>
+          </n-space>
+        </n-space>
+        <n-space v-if="mainStore.panel.enableEmail" align="center">
+          <n-space align="center">
+            提醒类型
+            <n-select size="small" :options="NoticeTypeOptions" v-model:value="mainStore.panel.noticeType" style="width: 100px"></n-select>
+            <n-select v-show="NoticeTypeOptions.find(item => item.value === mainStore.panel.noticeType).child.length !== 0" size="small" :options="NoticeTypeOptions.find(item => item.value === mainStore.panel.noticeType).child" v-model:value="mainStore.panel.cronNum" style="width: 100px"></n-select>
+          </n-space>
+          <n-space justify="center">
+            提醒时间
+            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.predictTime" placeholder="预计开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
+          </n-space>
+        </n-space>
+        <n-space justify="space-between" v-if="mainStore.panel.id !== 0" style="margin-bottom: 4px">
+          <n-space justify="start" align="center">
+            <n-button v-if="mainStore.panel.startDoTime === null" size="tiny" @click="startTodo">开始</n-button>
+            <div v-else>开始: {{mainStore.panel.startDoTime.replace('T', ' ')}}</div>
+          </n-space>
+          <n-space justify="start" align="center">
+            <n-button v-if="mainStore.panel.endDoTime === null && mainStore.panel.startDoTime" size="tiny" @click="endTodo">结束</n-button>
+            <div v-if="mainStore.panel.endDoTime !== null && mainStore.panel.startDoTime">结束: {{mainStore.panel.endDoTime.replace('T', ' ')}}</div>
+          </n-space>
+        </n-space>
+        <n-space v-if="mainStore.panel.endDoTime && mainStore.panel.startDoTime">总计: {{period}}</n-space>
+        <n-space vertical justify="space-around">
+          <n-input placeholder="准备做点什么" v-model:value="mainStore.panel.title"/>
+          <n-input
+              placeholder="描述"
+              type="textarea"
+              v-model:value="mainStore.panel.detail"
+              :autosize="{
+                minRows: 4,
+                maxRows: 4
+              }"
+          ></n-input>
+          <n-space>
+            <n-space>
+              <n-select v-model:value="mainStore.panel.taskBoxId" size="small" style="width: 200px" :options="mainStore.taskListOptions"/>
+            </n-space>
+          </n-space>
+          <n-space justify="space-between">
+            <n-space>
+              <n-select v-model:value="mainStore.panel.priority" size="small" style="width: 150px" :options="options"/>
+            </n-space>
+            <n-space justify="end" align="center">
+              <n-button size="small" type="success" @click="saveTodo">保存</n-button>
+              <n-button text type="error" v-if="mainStore.panel.id !== 0" size="small" @click="remove">
+                <template #icon>
+                  <n-icon :size="20">
+                    <Trash/>
+                  </n-icon>
+                </template>
+              </n-button>
+            </n-space>
+          </n-space>
+        </n-space>
+      </div>
+    </n-card>
+  </n-modal>
 </template>
 
 <script setup>
-import {NInput, NSpace, NDatePicker, NButton, NIcon, NSelect, NCheckbox, NTimePicker, useMessage, NSwitch} from 'naive-ui'
+import {
+  NInput,
+  NSpace,
+  NDatePicker,
+  NButton,
+  NIcon,
+  NSelect,
+  NCheckbox,
+  NTimePicker,
+  useMessage,
+  NSwitch,
+  NModal,
+  NCard
+} from 'naive-ui'
 import {useMainStore} from "@/store";
 import {myDayjs as dayjs} from "@/utils/dayUtils";
 import {computed, customRef} from "vue";
@@ -116,7 +238,6 @@ import {
   DateFormat,
   DateTimeFormat,
   EndTodoURL,
-  GenerateOptions,
   NoticeTypeOptions,
   options,
   StartTodoURL
@@ -124,6 +245,7 @@ import {
 import {removeTodo, save, toggleDone, update,} from '@/utils/apiUtils'
 import {Close, Trash} from "@vicons/ionicons5";
 import request from "@/utils/request";
+import {isMobile} from "@/utils/mobileUtils";
 
 const mainStore = useMainStore()
 

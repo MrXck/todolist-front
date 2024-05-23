@@ -44,7 +44,7 @@
     <Panel/>
     <n-modal v-model:show="showAddModal">
       <n-card
-          style="width: 600px"
+          style="width: 600px;max-width: 100%"
           title="批量新增"
           :bordered="false"
           size="huge"
@@ -175,6 +175,7 @@ import {
   BatchGenerateTodoURL, options, NoticeTypeOptions
 } from "@/utils/Constant";
 import request from "@/utils/request";
+import {isMobile} from "@/utils/mobileUtils";
 
 
 const date = ref(new Date())
