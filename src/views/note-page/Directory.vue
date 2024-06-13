@@ -32,7 +32,7 @@ function scrollDirector(offsetTop) {
 }
 
 function scrollTitle(item) {
-  location.hash = item.id
+  // location.hash = item.id
   document.documentElement.scroll({
     top: item.offsetTop
   })

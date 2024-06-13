@@ -3,7 +3,7 @@
     <h2 class="note-title">{{ note.title }}</h2>
     <Viewer ref="viewer" :locale="zhHans" :value="note.detail" :plugins="plugins"/>
   </div>
-  <n-card :bordered="false" class="title">
+  <n-card :bordered="false" class="title" style="min-width: 300px;width: 20vw;">
     <Directory :tag-list="tagList"></Directory>
   </n-card>
 </template>
@@ -120,7 +120,6 @@ onMounted(() => {
   display: block !important;
   width: 15%;
   margin-left: 20px;
-  max-height: 80vh;
   overflow: auto;
   position: fixed;
   top: 20px;
