@@ -13,6 +13,7 @@
       data.priority === 3 ? 'third bold' : '',
       data.priority === 4 ? 'fourth bold' : '',
       mainStore.selectedId === data.id ? 'selected' : '',
+      mainStore.selectedIds.indexOf(data.id.toString()) !== -1 ? 'selected' : '',
       !data.isDone && dayjs(data.endTime).startOf('day').isBefore(dayjs(new Date()).startOf('day')) ? 'delay' : ''
         ]">{{ data.title }}
     </div>
@@ -90,7 +91,7 @@ const [, drag, preview] = useDrag({
     if (!mainStore.keyDown && diff === 0) {
       return
     }
-    
+
     if (!mainStore.keyDown) {
       item.startTime = startTime.add(diff, 'day').format(DateFormat)
       item.endTime = endTime.add(diff, 'day').format(DateFormat)

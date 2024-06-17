@@ -34,6 +34,7 @@ export const useMainStore = defineStore('main', {
                 y: 0
             },
             selectedId: 0,
+            selectedIds: [],
             keyDown: false,
             altDown: false,
         }

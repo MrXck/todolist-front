@@ -1,5 +1,5 @@
 <template>
-  <div class="forward" :ref="drag"></div>
+  <div class="forward" :ref="drag" @mousedown.stop></div>
 </template>
 
 <script setup>

@@ -29,7 +29,7 @@
         <n-button round @click="nowMonth">今天</n-button>
       </n-space>
     </n-space>
-    <n-grid :cols="7" :row="6" style="margin-top: 10px" ref="calendar">
+    <n-grid :cols="7" :row="6" style="margin-top: 10px;position: relative" ref="calendar">
       <n-grid-item style="padding-left: 8px">周日</n-grid-item>
       <n-grid-item style="padding-left: 8px">周一</n-grid-item>
       <n-grid-item style="padding-left: 8px">周二</n-grid-item>
@@ -175,7 +175,6 @@ import {
   BatchGenerateTodoURL, options, NoticeTypeOptions
 } from "@/utils/Constant";
 import request from "@/utils/request";
-import {isMobile} from "@/utils/mobileUtils";
 
 
 const date = ref(new Date())
@@ -305,10 +304,232 @@ const click = (e) => {
   mainStore.selectedId = 0
 }
 
+const frameSelection = function (container, canSelectedElementClassName, selectedElementClassName, showSelDiv, mousedownCallBack = null, mousemoveCallBack = null, isScroll = false, isOffset = false) {
+  let mouseDown = false
+  container.addEventListener('mousedown', e => {
+    mouseDown = true
+    if (mousedownCallBack) {
+      mousedownCallBack()
+    }
+    let canSelList = []
+    let selectedList = []
+    let fileNodes = document.getElementsByClassName(canSelectedElementClassName)
+    for (let i = 0; i < fileNodes.length; i++) {
+      if (fileNodes[i].className.indexOf(canSelectedElementClassName) !== -1) {
+        fileNodes[i].className += ` ${canSelectedElementClassName}`
+        canSelList.push(fileNodes[i])
+      }
+    }
+    let isSelect = true
+    let evt = e
+    let startX = (evt.x || evt.clientX)
+    let startY = (evt.y || evt.clientY)
+    try {
+      container.removeChild(document.getElementById('selDiv'))
+    } catch (e) {
+    }
+    let selDiv = document.createElement('div')
+    container.append(selDiv)
+    selDiv.style = `position:absolute;width:0;height:0;font-size:0;margin:0;padding:0;border:1px solid #0099FF;background-color:#C3D5ED;z-index:1000;filter:alpha(opacity:60);opacity:0.6;display:none;`
+    selDiv.id = 'selDiv'
+    selDiv.style.left = startX + "px"
+    selDiv.style.top = startY + "px"
+    let _x = null
+    let _y = null
+    clearEventBubble(evt)
+    let startPoint = getRelativePositionInElement(evt.clientX, evt.clientY)
+    const boundingClientRect = container.getBoundingClientRect()
+    const totalHeight = container.scrollHeight
+    const scrollTop = container.scrollTop
+    const mouseMove = e => {
+      if (mouseDown) {
+        evt = e
+        if (isSelect) {
+          if (selDiv.style.display === "none") {
+            selDiv.style.display = ""
+          }
+          _x = (evt.x || evt.clientX)
+          _y = (evt.y || evt.clientY)
+          let endPoint = getRelativePositionInElement(evt.clientX, evt.clientY)
+
+          let maxHeight
+          let maxWidth
+          if (_x >= startX) {
+            maxWidth = boundingClientRect.width + container.offsetLeft
+            if (isOffset) {
+              maxWidth -= startX
+            }
+          } else {
+            maxWidth = boundingClientRect.width
+          }
+
+          if (_y > startY) {
+            maxHeight = totalHeight
+            if (isScroll) {
+              maxHeight -= startY
+              maxHeight -= scrollTop
+            }
+          } else {
+            maxHeight = totalHeight - container.scrollTop
+          }
+          selDiv.style.maxHeight = maxHeight + 'px'
+          selDiv.style.maxWidth = maxWidth + 'px'
+
+          selDiv.style.left = Math.min(startPoint.x, endPoint.x) + "px"
+          selDiv.style.top = Math.min(startPoint.y, endPoint.y) + "px"
+          selDiv.style.width = Math.abs(startPoint.x - endPoint.x) + "px"
+          selDiv.style.height = Math.abs(startPoint.y - endPoint.y) + "px"
+          scrollOnDrag(evt.clientX, evt.clientY)
+          // ---------------- 关键算法 ---------------------
+          let selDivRect = selDiv.getBoundingClientRect()
+          const left1 = selDivRect.left
+          const right1 = selDivRect.left + selDivRect.width
+          const top1 = selDivRect.top
+          const bottom1 = selDivRect.top + selDivRect.height
+          const width1 = selDivRect.width
+          const height1 = selDivRect.height
+          for (let i = 0; i < canSelList.length; i++) {
+            const itemRect = canSelList[i].getBoundingClientRect()
+            const left2 = itemRect.left
+            const right2 = itemRect.left + itemRect.width
+            const top2 = itemRect.top
+            const bottom2 = itemRect.top + itemRect.height
+            const width2 = itemRect.width
+            const height2 = itemRect.height
+            if (!(left2 > right1 || left1 > right2 || bottom1 < top2 || bottom2 < top1 || width1 <= 0 || width2 <= 0 || height1 <= 0 || height2 <= 0)) {
+              if (canSelList[i].className.indexOf(selectedElementClassName) === -1) {
+                canSelList[i].className = canSelList[i].className + ` ${selectedElementClassName}`
+              }
+            } else {
+              if (canSelList[i].className.indexOf(selectedElementClassName) !== -1) {
+                canSelList[i].classList.remove(selectedElementClassName)
+              }
+            }
+            if (mousemoveCallBack) {
+              const selectedList = []
+              for (let i = 0; i < canSelList.length; i++) {
+                if (canSelList[i].className.indexOf(selectedElementClassName) !== -1) {
+                  selectedList.push(canSelList[i])
+                }
+              }
+              mousemoveCallBack(selectedList, canSelList)
+            }
+
+
+          }
+        }
+        clearEventBubble(evt)
+      }
+    }
+    const mouseUp = e => {
+      e.stopPropagation()
+      e.preventDefault()
+      mouseDown = false
+      isSelect = false
+      if (selDiv) {
+        selDiv.style.display = 'none'
+        for (let i = 0; i < canSelList.length; i++) {
+          if (canSelList[i].className.indexOf(selectedElementClassName) !== -1) {
+            selectedList.push(canSelList[i])
+          }
+        }
+        showSelDiv(selectedList, canSelList)
+      }
+      canSelList = null
+      selectedList = null
+      _x = null
+      _y = null
+      selDiv = null
+      startX = null
+      startY = null
+      evt = null
+      document.removeEventListener('mousemove', mouseMove)
+      document.removeEventListener('mouseup', mouseUp)
+    }
+    document.addEventListener('mousemove', mouseMove)
+
+    document.addEventListener('mouseup', mouseUp)
+  })
+
+  function clearEventBubble(evt) {
+    if (evt.stopPropagation)
+      evt.stopPropagation()
+    else {
+      evt.cancelBubble = true
+    }
+    if (evt.preventDefault) {
+      evt.preventDefault()
+    } else {
+      evt.returnValue = false
+    }
+  }
+
+  function getRelativePositionInElement(clientX, clientY) {
+    const rect = container.getBoundingClientRect()
+    const {left, top} = rect
+    const {scrollLeft, scrollTop, scrollWidth, scrollHeight} = container
+    let x = clientX - left + scrollLeft
+    let y = clientY - top + scrollTop
+    if (x < 0) {
+      x = 0
+    } else if (x > scrollWidth) {
+      x = scrollWidth
+    }
+
+    if (y < 0) {
+      y = 0
+    } else if (y > scrollHeight) {
+      y = scrollHeight
+    }
+
+    return {x: Math.round(x), y: Math.round(y)}
+  }
+
+  function scrollOnDrag(mouseX, mouseY) {
+    const {x, y, width, height} = container.getBoundingClientRect()
+    let scrollX, scrollY
+
+    if (mouseX < x) {
+      scrollX = mouseX - x
+    } else if (mouseX > (x + width)) {
+      scrollX = mouseX - (x + width)
+    }
+
+    if (mouseY < y) {
+      scrollY = mouseY - y
+    } else if (mouseY > (y + height)) {
+      scrollY = mouseY - (y + height)
+    }
+
+    if (scrollX || scrollY) {
+      container.scrollBy({
+        top: scrollY,
+        behavior: 'auto'
+      })
+    }
+  }
+
+  document.body.addEventListener('dragover', ev => {
+    ev.preventDefault()
+  })
+}
+
 onMounted(() => {
   initList()
   initTaskList()
   document.querySelector('#calendar').addEventListener('click', click)
+  frameSelection(calendar.value.$el, 'content', 'selected', (selectedList, totalList) => {
+    mainStore.selectedIds.length = 0
+    for (let i = 0; i < selectedList.length; i++) {
+      const id = selectedList[i].id
+      if (mainStore.selectedIds.indexOf(id) === -1) {
+        mainStore.selectedIds.push(id)
+      }
+    }
+  }, () => {
+    mainStore.selectedIds.length = 0
+    mainStore.selectedId = ''
+  })
 })
 
 onBeforeUnmount(() => {
