@@ -150,7 +150,6 @@ onMounted(() => {
 .heart-map {
   display: flex;
   flex-wrap: wrap;
-  width: 600px;
 }
 
 .heart-map-item {
