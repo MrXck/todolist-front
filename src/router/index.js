@@ -163,15 +163,11 @@ const routes = [
     }
   },
   {
-    path: '/404',
+    path: '/:pathMatch(.*)*',
     component: () => import('../views/result-page/404'),
     meta: {
       title: '404 Not Found'
     }
-  },
-  {
-    path: '/:path',
-    redirect: '/404'
   },
 ]
 
