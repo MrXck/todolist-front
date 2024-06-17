@@ -172,7 +172,7 @@ import {
   GetTodoByMonthURL,
   GenerateOptions,
   GenerateTypeDay,
-  BatchGenerateTodoURL, options, NoticeTypeOptions
+  BatchGenerateTodoURL, options, NoticeTypeOptions, DeleteTodoBatchURL
 } from "@/utils/Constant";
 import request from "@/utils/request";
 
@@ -514,10 +514,36 @@ const frameSelection = function (container, canSelectedElementClassName, selecte
   })
 }
 
+
+function keyDown(e) {
+  if (e.keyCode === 17) {
+    mainStore.keyDown = true
+  } else if (e.keyCode === 18) {
+    mainStore.altDown = true
+  }
+}
+
+function keyUp(e) {
+  if (e.keyCode === 17) {
+    mainStore.keyDown = false
+  } else if (e.keyCode === 18) {
+    mainStore.altDown = false
+  } else if (e.keyCode === 46) {
+    request.post(DeleteTodoBatchURL, {todoIds: mainStore.selectedIds}).then(res => {
+      if (res.code === 0) {
+        message.success("操作成功")
+        init()
+      }
+    })
+  }
+}
+
 onMounted(() => {
   initList()
   initTaskList()
   document.querySelector('#calendar').addEventListener('click', click)
+  window.addEventListener('keydown', keyDown)
+  window.addEventListener('keyup', keyUp)
   frameSelection(calendar.value.$el, 'content', 'selected', (selectedList, totalList) => {
     mainStore.selectedIds.length = 0
     for (let i = 0; i < selectedList.length; i++) {
@@ -534,6 +560,8 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   document.querySelector('#calendar').removeEventListener('click', click)
+  window.removeEventListener('keydown', keyDown)
+  window.removeEventListener('keyup', keyUp)
 })
 </script>
 
