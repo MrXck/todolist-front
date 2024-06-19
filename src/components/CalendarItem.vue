@@ -3,7 +3,7 @@
       'calendar-item-item',
   ]" ref="item" v-if="data !== null">
     <Backend :data="data" v-if="data.startTime === fullDate" :full-date="fullDate"/>
-    <div :id="data.id" @click="showPanel" :ref="drag" :class="[
+    <div :id="data.id" @click="showPanel" :ref="drag" @mousedown.stop :class="[
       'content',
       data.startTime === fullDate ? 'left-border' : '',
       data.endTime === fullDate ? 'right-border' : '',
