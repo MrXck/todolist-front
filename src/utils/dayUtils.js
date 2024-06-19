@@ -2,6 +2,7 @@ import dayjs from "dayjs"
 import {DateFormat} from "@/utils/Constant";
 import updateLocale from "dayjs/plugin/updateLocale";
 import isBetween from "dayjs/plugin/isBetween";
+import customParseFormat from "dayjs/plugin/customParseFormat"
 import solarlunar from 'solarlunar';
 
 const isMonday = true;
@@ -10,6 +11,7 @@ dayjs.updateLocale("en", {
   weekStart: isMonday ? 1 : 0,
 });
 dayjs.extend(isBetween)
+dayjs.extend(customParseFormat)
 
 export const myDayjs = dayjs;
 

@@ -169,6 +169,19 @@ const menuOptions = [
         key: '/time-control/time',
         icon: renderIcon(AppsSharp)
       },
+      {
+        label: () => h(
+            RouterLink,
+            {
+              to: {
+                name: 'time-line'
+              }
+            },
+            {default: () => "时间线管理"}
+        ),
+        key: '/time-control/time-line',
+        icon: renderIcon(AppsSharp)
+      },
     ]
   },
   {

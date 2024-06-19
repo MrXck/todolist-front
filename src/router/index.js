@@ -116,6 +116,14 @@ const routes = [
               title: '时间管理'
             }
           },
+          {
+            path: 'time-line',
+            name: 'time-line',
+            component: () => import('../views/time-page/TimeLine.vue'),
+            meta: {
+              title: '时间线管理'
+            }
+          },
         ]
       },
       {
