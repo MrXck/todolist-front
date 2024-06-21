@@ -22,5 +22,7 @@ import { HTML5Backend } from "react-dnd-html5-backend"
 * {
   padding: 0;
   margin: 0;
+  font-family: "LXGW WenKai Screen" ,-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;
+  font-weight: normal;
 }
 </style>
