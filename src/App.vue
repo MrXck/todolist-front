@@ -15,6 +15,7 @@
 import {NLoadingBarProvider, NMessageProvider, NConfigProvider, zhCN, dateZhCN} from 'naive-ui'
 import { DndProvider } from 'vue3-dnd'
 import { HTML5Backend } from "react-dnd-html5-backend"
+import '@/assets/font/style.css'
 
 </script>
 
