@@ -3,14 +3,14 @@
     <h2 class="note-title">{{ note.title }}</h2>
     <Viewer ref="viewer" :locale="zhHans" :value="note.detail" :plugins="plugins"/>
   </div>
-  <n-card :bordered="false" class="title" style="min-width: 300px;width: 20vw;">
-    <Directory :tag-list="tagList"></Directory>
-  </n-card>
+  <div v-show="showDirectory">
+    <Directory class="title" :tag-list="tagList"></Directory>
+  </div>
 </template>
 
 <script setup>
-import {NCard, useMessage} from 'naive-ui'
-import {onMounted, reactive, ref} from "vue";
+import {useMessage} from 'naive-ui'
+import {computed, onBeforeUnmount, onMounted, reactive, ref} from "vue";
 import {useRoute} from "vue-router";
 import request from "@/utils/request";
 import {GetNoteByIdURL} from "@/utils/Constant";
@@ -44,6 +44,7 @@ const plugins = [
 const viewer = ref(null)
 const tagList = reactive([])
 const h = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6']
+const showDirectory = ref(false)
 
 
 const getCataLogData = () => {
@@ -90,6 +91,10 @@ function setTitleId() {
   getCataLogData()
 }
 
+function resize() {
+  showDirectory.value = document.documentElement.clientWidth > 768;
+}
+
 onMounted(() => {
   if (route.params.id !== null && route.params.id !== undefined) {
     request.get(GetNoteByIdURL + route.params.id).then(res => {
@@ -107,6 +112,12 @@ onMounted(() => {
   } else {
     message.error('页面有误')
   }
+
+  window.addEventListener('resize', resize)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', resize)
 })
 </script>
 
@@ -118,12 +129,13 @@ onMounted(() => {
 
 .title {
   display: block !important;
-  width: 15%;
   margin-left: 20px;
   overflow: auto;
-  position: fixed;
+  position: fixed !important;
   top: 20px;
   right: 30px;
+  min-width: 300px;
+  width: 20vw;
 }
 
 :deep(.markdown-body) {
