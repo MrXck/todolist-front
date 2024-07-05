@@ -10,7 +10,7 @@
 
 <script setup>
 import {useMessage} from 'naive-ui'
-import {computed, onBeforeUnmount, onMounted, reactive, ref} from "vue";
+import {computed, nextTick, onBeforeUnmount, onMounted, reactive, ref} from "vue";
 import {useRoute} from "vue-router";
 import request from "@/utils/request";
 import {GetNoteByIdURL} from "@/utils/Constant";
@@ -44,7 +44,7 @@ const plugins = [
 const viewer = ref(null)
 const tagList = reactive([])
 const h = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6']
-const showDirectory = ref(false)
+const showDirectory = ref(document.documentElement.clientWidth > 768)
 
 
 const getCataLogData = () => {
@@ -92,7 +92,7 @@ function setTitleId() {
 }
 
 function resize() {
-  showDirectory.value = document.documentElement.clientWidth > 768;
+  showDirectory.value = document.documentElement.clientWidth > 768
 }
 
 onMounted(() => {
@@ -103,6 +103,12 @@ onMounted(() => {
         document.querySelector('title').innerText = `${note.value.title} - 待办事项`
         setTimeout(() => {
           setTitleId()
+          nextTick(() => {
+            document.documentElement.scrollTo({
+              top: document.querySelector(route.hash).offsetTop,
+              behavior: 'smooth'
+            })
+          })
         }, 1000)
       } else {
         message.error(res.msg)
@@ -122,6 +128,10 @@ onBeforeUnmount(() => {
 </script>
 
 <style>
+body {
+  scroll-behavior: smooth;
+}
+
 .note-title {
   font-size: 30px;
   text-align: center;

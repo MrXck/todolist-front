@@ -1,6 +1,8 @@
 <script setup>
 import {onBeforeUnmount, onMounted, ref} from "vue";
+import {useRouter} from "vue-router";
 
+const router = useRouter()
 const {tagList} = defineProps({
   tagList: {
     type: Array,
@@ -26,15 +28,17 @@ function scroll(e) {
 }
 
 function scrollDirector(offsetTop) {
-  directoryBody.value.scroll({
+  directoryBody.value.scrollTo({
     top: offsetTop,
+    behavior: 'smooth'
   })
 }
 
 function scrollTitle(item) {
-  // location.hash = item.id
-  document.documentElement.scroll({
-    top: item.offsetTop
+  router.push({hash: item.id})
+  document.documentElement.scrollTo({
+    top: item.offsetTop,
+    behavior: 'smooth'
   })
 }
 
