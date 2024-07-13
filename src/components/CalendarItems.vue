@@ -136,7 +136,7 @@ function showPanel(e) {
 }
 
 onMounted(() => {
-  showDetail.value = document.documentElement.clientWidth >= 768;
+  showDetail.value = document.documentElement.clientWidth >= 850;
   window.addEventListener('resize', resize)
 })
 
@@ -145,7 +145,7 @@ onBeforeUnmount(() => {
 })
 
 function resize(e) {
-  if (document.documentElement.clientWidth < 768) {
+  if (document.documentElement.clientWidth < 850) {
     showDetail.value = false
   } else if (document.documentElement.clientWidth > 1000) {
     showDetail.value = true

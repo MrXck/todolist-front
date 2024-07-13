@@ -265,7 +265,7 @@ onBeforeUnmount(() => {
 
 
 function resize(e) {
-  if (document.documentElement.clientWidth < 768) {
+  if (document.documentElement.clientWidth < 1000) {
     collapsed.value = true
   }
 }
