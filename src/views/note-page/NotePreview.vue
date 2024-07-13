@@ -1,7 +1,9 @@
 <template>
+  <n-button @click="showChart" class="chart-button">展示图表</n-button>
   <div style="max-width: 60vw;margin: 30px auto 0;">
     <h2 class="note-title">{{ note.title }}</h2>
     <Viewer ref="viewer" :locale="zhHans" :value="note.detail" :plugins="plugins"/>
+    <iframe v-if="showCharts" ref="frame" :src="DRAW_IO_URL" width="100%" height="800" @load="init"></iframe>
   </div>
   <div v-show="showDirectory">
     <Directory class="title" :tag-list="tagList"></Directory>
@@ -9,11 +11,11 @@
 </template>
 
 <script setup>
-import {useMessage} from 'naive-ui'
-import {computed, nextTick, onBeforeUnmount, onMounted, reactive, ref} from "vue";
+import {useMessage, NButton} from 'naive-ui'
+import {nextTick, onBeforeUnmount, onMounted, reactive, ref} from "vue";
 import {useRoute} from "vue-router";
 import request from "@/utils/request";
-import {GetNoteByIdURL} from "@/utils/Constant";
+import {DRAW_IO_URL, GetNoteByIdURL} from "@/utils/Constant";
 import {Viewer} from '@bytemd/vue-next'
 import gfm from '@bytemd/plugin-gfm'
 import gemoji from '@bytemd/plugin-gemoji'
@@ -31,7 +33,8 @@ const message = useMessage()
 const route = useRoute()
 const note = ref({
   title: '',
-  detail: ''
+  detail: '',
+  chart: '',
 })
 const plugins = [
   gfm(),
@@ -45,6 +48,8 @@ const viewer = ref(null)
 const tagList = reactive([])
 const h = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6']
 const showDirectory = ref(document.documentElement.clientWidth > 768)
+const showCharts = ref(false)
+const frame = ref()
 
 
 const getCataLogData = () => {
@@ -95,6 +100,34 @@ function resize() {
   showDirectory.value = document.documentElement.clientWidth > 768
 }
 
+function init() {
+  if (route.hash) {
+    nextTick(() => {
+      document.documentElement.scrollTo({
+        top: document.querySelector(route.hash).offsetTop,
+        behavior: 'smooth'
+      })
+    })
+  } else {
+    document.documentElement.scrollTo({
+      top: 0
+    })
+  }
+}
+
+function showChart() {
+  showCharts.value = !showCharts.value
+  if (showCharts.value) {
+    const data = {
+      title: note.value.title,
+      data: note.value.chart
+    }
+    setTimeout(() => {
+      frame.value.contentWindow.postMessage(data, "*")
+    }, 3000)
+  }
+}
+
 onMounted(() => {
   if (route.params.id !== null && route.params.id !== undefined) {
     request.get(GetNoteByIdURL + route.params.id).then(res => {
@@ -103,12 +136,7 @@ onMounted(() => {
         document.querySelector('title').innerText = `${note.value.title} - 待办事项`
         setTimeout(() => {
           setTitleId()
-          nextTick(() => {
-            document.documentElement.scrollTo({
-              top: document.querySelector(route.hash).offsetTop,
-              behavior: 'smooth'
-            })
-          })
+          init()
         }, 1000)
       } else {
         message.error(res.msg)
@@ -146,6 +174,12 @@ body {
   right: 30px;
   min-width: 300px;
   width: 20vw;
+}
+
+.chart-button {
+  position: sticky;
+  top: 10px;
+  left: 10%;
 }
 
 :deep(.markdown-body) {

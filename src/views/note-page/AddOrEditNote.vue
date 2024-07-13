@@ -3,6 +3,7 @@
     <n-input placeholder="请输入标题" v-model:value="note.title"/>
     <Editor :locale="zhHans" :upload-images="handleUploadFile" :value="note.detail" :plugins="plugins"
             @change="handleChange"/>
+    <iframe ref="frame" :src="DRAW_IO_URL" width="1500" height="800"></iframe>
     <n-button @click="save">提交</n-button>
   </n-space>
 
@@ -10,9 +11,9 @@
 
 <script setup>
 import {NSpace, NInput, NButton, useMessage} from 'naive-ui'
-import {onMounted, ref} from "vue";
+import {onBeforeUnmount, onMounted, ref} from "vue";
 import {useRoute} from "vue-router";
-import {AddNoteURL, BASEURL, GetNoteByIdURL, UpdateNoteURL} from "@/utils/Constant";
+import {AddNoteURL, BASEURL, DRAW_IO_URL, GetNoteByIdURL, UpdateNoteURL} from "@/utils/Constant";
 import request from "@/utils/request";
 import {Editor} from '@bytemd/vue-next'
 import gfm from "@bytemd/plugin-gfm";
@@ -36,13 +37,14 @@ const plugins = [
 ]
 const route = useRoute();
 const message = useMessage();
-let editor = null
+const frame = ref()
 const type = ref('add')
 const isLoading = ref(true)
 const note = ref({
   id: '',
   title: '',
-  detail: ''
+  detail: '',
+  chart: '',
 })
 
 function handleChange(val) {
@@ -97,13 +99,26 @@ function uploadImageApi(formData, config = {
   return request.post("/file/upload", formData, config)
 }
 
+function getChart(e) {
+  note.value.chart = e.data.data
+}
+
 onMounted(() => {
+  window.addEventListener("message", getChart)
+
   if (route.params.id !== null && route.params.id !== undefined) {
     type.value = 'edit'
     note.value.id = route.params.id
     request.get(GetNoteByIdURL + route.params.id).then(res => {
       if (res.code === 0) {
         note.value = res.data.note
+        const data = {
+          title: note.value.title,
+          data: note.value.chart
+        }
+        setTimeout(() => {
+          frame.value.contentWindow.postMessage(data, "*")
+        }, 3000)
       } else {
         message.error(res.msg)
       }
@@ -112,6 +127,10 @@ onMounted(() => {
   } else {
     isLoading.value = false
   }
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener("message", getChart)
 })
 
 </script>
