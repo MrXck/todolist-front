@@ -5326,7 +5326,8 @@ var SaveDialog = function(editorUi, title, saveFn, disabledModes, data, mimeType
 
 		if (entry != null)
 		{
-			// saveFn(saveAsInput, entry.mode, entry.id);
+			debugger
+			saveFn(saveAsInput, entry.mode, entry.id);
 		}
 	}, null, 'geBtn gePrimaryBtn');
 

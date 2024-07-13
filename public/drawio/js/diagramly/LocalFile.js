@@ -11,7 +11,7 @@
 LocalFile = function(ui, data, title, temp, fileHandle, desc, editable)
 {
 	DrawioFile.call(this, ui, data);
-	
+
 	this.title = title;
 	this.mode = (temp) ? null : App.MODE_DEVICE;
 	this.fileHandle = fileHandle;
@@ -24,7 +24,7 @@ mxUtils.extend(LocalFile, DrawioFile);
 
 /**
  * Translates this point by the given vector.
- * 
+ *
  * @param {number} dx X-coordinate of the translation.
  * @param {number} dy Y-coordinate of the translation.
  */
@@ -44,7 +44,7 @@ LocalFile.prototype.isAutosaveOptional = function()
 
 /**
  * Translates this point by the given vector.
- * 
+ *
  * @param {number} dx X-coordinate of the translation.
  * @param {number} dy Y-coordinate of the translation.
  */
@@ -55,7 +55,7 @@ LocalFile.prototype.getMode = function()
 
 /**
  * Translates this point by the given vector.
- * 
+ *
  * @param {number} dx X-coordinate of the translation.
  * @param {number} dy Y-coordinate of the translation.
  */
@@ -66,7 +66,7 @@ LocalFile.prototype.getTitle = function()
 
 /**
  * Translates this point by the given vector.
- * 
+ *
  * @param {number} dx X-coordinate of the translation.
  * @param {number} dy Y-coordinate of the translation.
  */
@@ -77,7 +77,7 @@ LocalFile.prototype.isRenamable = function()
 
 /**
  * Translates this point by the given vector.
- * 
+ *
  * @param {number} dx X-coordinate of the translation.
  * @param {number} dy Y-coordinate of the translation.
  */
@@ -89,7 +89,7 @@ LocalFile.prototype.isEditable = function()
 
 /**
  * Translates this point by the given vector.
- * 
+ *
  * @param {number} dx X-coordinate of the translation.
  * @param {number} dy Y-coordinate of the translation.
  */
@@ -101,7 +101,7 @@ LocalFile.prototype.setEditable = function(editable)
 
 /**
  * Translates this point by the given vector.
- * 
+ *
  * @param {number} dx X-coordinate of the translation.
  * @param {number} dy Y-coordinate of the translation.
  */
@@ -112,7 +112,7 @@ LocalFile.prototype.save = function(revision, success, error, unloading, overwri
 
 /**
  * Translates this point by the given vector.
- * 
+ *
  * @param {number} dx X-coordinate of the translation.
  * @param {number} dy Y-coordinate of the translation.
  */
@@ -139,7 +139,7 @@ LocalFile.prototype.setDescriptor = function(desc)
 
 /**
  * Translates this point by the given vector.
- * 
+ *
  * @param {number} dx X-coordinate of the translation.
  * @param {number} dy Y-coordinate of the translation.
  */
@@ -160,7 +160,7 @@ LocalFile.prototype.getLatestVersion = function(success, error)
 
 /**
  * Translates this point by the given vector.
- * 
+ *
  * @param {number} dx X-coordinate of the translation.
  * @param {number} dy Y-coordinate of the translation.
  */
@@ -172,7 +172,7 @@ LocalFile.prototype.saveFile = function(title, revision, success, error, useCurr
 		this.desc = null;
 		this.editable = null;
 	}
-	
+
 	this.title = title;
 
 	// Updates data after changing file name
@@ -182,15 +182,15 @@ LocalFile.prototype.saveFile = function(title, revision, success, error, useCurr
 	}
 
 
-	// todo 在这里上传数据  title 为 标题 
+	// todo 在这里上传数据  title 为 标题
 	console.log('自动保存')
 	window.parent.postMessage({title, data: this.createData()}, "*");
 
-	
+
 	var binary = this.ui.useCanvasForExport && /(\.png)$/i.test(this.getTitle());
 	this.setShadowModified(false);
 	var savedData = this.getData();
-	
+
 	var done = mxUtils.bind(this, function()
 	{
 		this.setModified(this.getShadowModified());
@@ -201,7 +201,7 @@ LocalFile.prototype.saveFile = function(title, revision, success, error, useCurr
 			success();
 		}
 	});
-	
+
 	var doSave = mxUtils.bind(this, function(data)
 	{
 		if (this.fileHandle != null)
@@ -211,21 +211,21 @@ LocalFile.prototype.saveFile = function(title, revision, success, error, useCurr
 			{
 				this.savingFileTime = new Date();
 				this.savingFile = true;
-				
+
 				var errorWrapper = mxUtils.bind(this, function(e)
 				{
 					this.savingFile = false;
-					
+
 					if (error != null)
 					{
 						// Wraps error object to offer save status option
 						error({error: e});
 					}
 				});
-				
+
 				// Saves a copy as a draft while saving
 				this.saveDraft(savedData);
-				
+
 				this.fileHandle.createWritable().then(mxUtils.bind(this, function(writable)
 				{
 					this.fileHandle.getFile().then(mxUtils.bind(this, function(newDesc)
@@ -236,7 +236,7 @@ LocalFile.prototype.saveFile = function(title, revision, success, error, useCurr
 							'desc', [this.desc], 'newDesc', [newDesc],
 							'conflict', this.desc.lastModified !=
 								newDesc.lastModified);
-						
+
 						if (overwrite || this.desc.lastModified == newDesc.lastModified)
 						{
 							writable.write((binary) ? this.ui.base64ToBlob(data, 'image/png') : data).then(mxUtils.bind(this, function()
@@ -251,7 +251,7 @@ LocalFile.prototype.saveFile = function(title, revision, success, error, useCurr
 											this.savingFile = false;
 											this.desc = desc;
 											this.fileSaved(savedData, lastDesc, done, errorWrapper);
-											
+
 											// Deletes draft after saving
 											this.removeDraft();
 										}
@@ -280,8 +280,8 @@ LocalFile.prototype.saveFile = function(title, revision, success, error, useCurr
 		{
 			if (this.ui.isOfflineApp() || this.ui.isLocalFileSave())
 			{
-				// this.ui.doSaveLocalFile(data, title, (binary) ?
-				// 	'image/png' : 'text/xml', binary);
+				this.ui.doSaveLocalFile(data, title, (binary) ?
+					'image/png' : 'text/xml', binary);
 			}
 			else
 			{
@@ -289,7 +289,7 @@ LocalFile.prototype.saveFile = function(title, revision, success, error, useCurr
 				{
 					var dot = title.lastIndexOf('.');
 					var format = (dot > 0) ? title.substring(dot + 1) : 'xml';
-	
+
 					// Do not update modified flag
 					new mxXmlRequest(SAVE_URL, 'format=' + format +
 						'&xml=' + encodeURIComponent(data) +
@@ -305,11 +305,11 @@ LocalFile.prototype.saveFile = function(title, revision, success, error, useCurr
 					}));
 				}
 			}
-			
+
 			done();
 		}
 	});
-	
+
 	if (binary)
 	{
 		var p = this.ui.getPngFileProperties(this.ui.fileNode);
@@ -328,7 +328,7 @@ LocalFile.prototype.saveFile = function(title, revision, success, error, useCurr
 
 /**
  * Translates this point by the given vector.
- * 
+ *
  * @param {number} dx X-coordinate of the translation.
  * @param {number} dy Y-coordinate of the translation.
  */
@@ -336,7 +336,7 @@ LocalFile.prototype.rename = function(title, success, error)
 {
 	this.title = title;
 	this.descriptorChanged();
-	
+
 	if (success != null)
 	{
 		success();
