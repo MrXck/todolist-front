@@ -1,9 +1,10 @@
 <template>
   <n-space vertical>
     <n-input placeholder="请输入标题" v-model:value="note.title"/>
+    <n-button @click="showChart" class="chart-button">展示图表</n-button>
     <Editor :locale="zhHans" :upload-images="handleUploadFile" :value="note.detail" :plugins="plugins"
             @change="handleChange"/>
-    <iframe ref="frame" :src="DRAW_IO_URL" width="1500" height="800"></iframe>
+    <iframe v-if="showCharts" ref="frame" :src="DRAW_IO_URL" width="1500" height="800"></iframe>
     <n-button @click="save">提交</n-button>
   </n-space>
 
@@ -46,6 +47,8 @@ const note = ref({
   detail: '',
   chart: '',
 })
+const showCharts = ref(false)
+
 
 function handleChange(val) {
   note.value.detail = val
@@ -103,6 +106,19 @@ function getChart(e) {
   note.value.chart = e.data.data
 }
 
+function showChart() {
+  showCharts.value = !showCharts.value
+  if (showCharts.value) {
+    const data = {
+      title: note.value.title,
+      data: note.value.chart
+    }
+    setTimeout(() => {
+      frame.value.contentWindow.postMessage(data, "*")
+    }, 3000)
+  }
+}
+
 onMounted(() => {
   window.addEventListener("message", getChart)
 
@@ -112,13 +128,6 @@ onMounted(() => {
     request.get(GetNoteByIdURL + route.params.id).then(res => {
       if (res.code === 0) {
         note.value = res.data.note
-        const data = {
-          title: note.value.title,
-          data: note.value.chart
-        }
-        setTimeout(() => {
-          frame.value.contentWindow.postMessage(data, "*")
-        }, 3000)
       } else {
         message.error(res.msg)
       }
