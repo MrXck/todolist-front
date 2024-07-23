@@ -157,31 +157,35 @@ onMounted(() => {
 }
 
 .selected {
-  filter: brightness(0.92)!important;
+  filter: brightness(0.92) !important;
 }
 
-.done {
+.calendar-item-item .done {
   background-color: #a6e7ff !important;
 }
 
-.first {
+.calendar-item-item .first {
   color: #ec49a0;
+  background-color: #ffc9cb;
 }
 
-.second {
+.calendar-item-item .second {
   color: #8e70ff;
+  background-color: #efc6fd;
 }
 
-.third {
-  color: #e6a23c;
+.calendar-item-item .third {
+  color: #d49130;
+  background-color: #fddec3;
 }
 
-.fourth {
-  color: #2080f0;
+.calendar-item-item .fourth {
+  color: #4685da;
+  background-color: #afc8ff;
 }
 
-.delay {
-  background-color: #ffc8c8 !important;
+.calendar-item-item .delay {
+  background-color: #ffc8c8;
 }
 
 .bold {
