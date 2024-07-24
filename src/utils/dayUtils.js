@@ -8,7 +8,7 @@ import solarlunar from 'solarlunar';
 const isMonday = true;
 dayjs.extend(updateLocale);
 dayjs.updateLocale("en", {
-  weekStart: isMonday ? 1 : 0,
+  // weekStart: isMonday ? 1 : 0,
 });
 dayjs.extend(isBetween)
 dayjs.extend(customParseFormat)
@@ -94,6 +94,25 @@ export function getNextMonthDays(year, month) {
     })
   }
 
+  return list
+}
+
+export function getDaysByNum(date, num) {
+  const val = date
+  const nowDay = dayjs(val).day()
+  const list = []
+  // 这周的第一天
+  let str
+  if (nowDay) {
+    // 非周天，即当周
+    str = dayjs(val).startOf('week').add(1, 'day')
+  } else {
+    // 周天，先减去一天，当作是上周的，然后算出来是上周的周天是第一天，最后再加上一天就是周一
+    str = dayjs(val).subtract(1, 'day').startOf('week').add(1, 'day')
+  }
+  for (let i = 0; i < num; i++) {
+    list.push(dayjs(str).add(i, 'day').format(DateFormat))
+  }
   return list
 }
 

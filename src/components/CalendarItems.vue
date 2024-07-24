@@ -164,7 +164,6 @@ function resize(e) {
 }
 
 .calendar-item {
-  //height: 130px;
   height: calc((100vh - 64px - 20px - 34px - 10px - 30px) / 6);
 }
 

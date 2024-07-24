@@ -33,6 +33,14 @@ const routes = [
         }
       },
       {
+        path: 'calendar-detail',
+        name: 'calendar-detail',
+        component: () => import('../views/calendar-page/CalendarDetail'),
+        meta: {
+          title: '日历详情'
+        }
+      },
+      {
         path: 'note-control',
         name: 'note-control',
         redirect: '/note-control/note',

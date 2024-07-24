@@ -112,6 +112,19 @@ const menuOptions = [
     icon: renderIcon(CalendarOutline)
   },
   {
+    label: () => h(
+        RouterLink,
+        {
+          to: {
+            name: 'calendar-detail',
+          }
+        },
+        {default: () => "日历详情"}
+    ),
+    key: '/calendar-detail',
+    icon: renderIcon(CalendarOutline)
+  },
+  {
     label: '笔记相关',
     key: '/note-control',
     icon: renderIcon(List),
