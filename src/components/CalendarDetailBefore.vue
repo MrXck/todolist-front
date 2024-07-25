@@ -1,5 +1,9 @@
 <script setup>
 
+import {onMounted, ref} from "vue";
+import {useDrag} from "@/utils/dragUtils";
+
+const before = ref()
 const {date, data} = defineProps({
   date: {
     type: String,
@@ -10,16 +14,31 @@ const {date, data} = defineProps({
     required: true
   }
 })
+
+
+onMounted(() => {
+  useDrag({
+    type: 'before',
+    node: before.value,
+    item: {
+      data
+    },
+    end: (e, item, dropData, type) => {
+      console.log('end', e, item, dropData, type)
+    }
+  })
+})
+
 </script>
 
 <template>
-  <div class="before" draggable="true"></div>
+  <div class="before" draggable="true" ref="before"></div>
 </template>
 
 <style scoped>
 .before {
-  margin-top: 2px;
   cursor: row-resize;
-  height: 1px;
+  height: 4px;
+  padding-top: 1px;
 }
 </style>

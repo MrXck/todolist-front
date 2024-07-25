@@ -1,9 +1,12 @@
 <script setup>
-import {NScrollbar} from 'naive-ui'
+import {NScrollbar, useMessage} from 'naive-ui'
 import CalendarDetailItem from "@/components/CalendarDetailItem.vue";
 import {onMounted, reactive, ref} from "vue";
 import {useDrop} from "@/utils/dragUtils";
 import {myDayjs as dayjs} from "@/utils/dayUtils";
+import {useMainStore} from "@/store";
+import {DateFormat, TimeFormat, UpdateTodoByIdURL} from "@/utils/Constant";
+import request from "@/utils/request";
 
 const {timeHeight, index, date, dataList} = defineProps({
   timeHeight: {
@@ -25,6 +28,8 @@ const {timeHeight, index, date, dataList} = defineProps({
 
 const itemsRef = ref()
 const timeList = reactive([])
+const message = useMessage()
+const mainStore = useMainStore()
 
 function init() {
   timeList.length = 0
@@ -68,17 +73,60 @@ function init() {
 onMounted(() => {
   init()
 
-  itemsRef.value.map(item => {
+  itemsRef.value.map(node => {
     useDrop({
       accept: ['before', 'after', 'move'],
-      node: item,
-      drop: (e, item) => {
-        console.log(e, item)
+      node,
+      drop: (e, item, type) => {
+        const data = item.data
+        const id = data.id
+        const rect = node.getBoundingClientRect()
+        const hour = node.getAttribute('data-hour');
+        const minute = Math.ceil((e.clientY - rect.top) / (rect.height) * 60)
+        const newBeforeDateTime = dayjs(`${date} ${hour}:${minute}:00`)
+        const oldBeforeDateTime = dayjs(`${data.startTime} ${data.planStartTime ? data.planStartTime : data.predictTime}`)
+        const newAfterDateTime = dayjs(`${date} ${hour}:${minute}:00`)
+        const oldAfterDateTime = dayjs(`${data.endTime} ${data.planEndTime ? data.planEndTime : data.predictTime}`)
+        if (type === 'before') {
+          if (newBeforeDateTime.isAfter(oldAfterDateTime)) {
+            message.error(`开始时间不能大于结束时间`)
+          } else {
+            data.planStartTime = newBeforeDateTime.format(TimeFormat)
+            data.startTime = newBeforeDateTime.format(DateFormat)
+            mainStore.updateById(id, data)
+          }
+        } else if (type === 'after') {
+          if (newAfterDateTime.isBefore(oldBeforeDateTime)) {
+            message.error(`结束时间不能小于开始时间`)
+          } else {
+            data.planEndTime = newAfterDateTime.format(TimeFormat)
+            data.endTime = newAfterDateTime.format(DateFormat)
+            mainStore.updateById(id, data)
+          }
+        } else if (type === 'move') {
+          const second = oldAfterDateTime.diff(oldBeforeDateTime, 'second')
+          data.planStartTime = newBeforeDateTime.format(TimeFormat)
+          data.startTime = newBeforeDateTime.format(DateFormat)
+          const afterDateTime = newBeforeDateTime.add(second, 'second')
+          data.endTime = afterDateTime.format(DateFormat)
+          data.planEndTime = afterDateTime.format(TimeFormat)
+          mainStore.updateById(id, data)
+        }
+        request.post(UpdateTodoByIdURL, data).then(res => {
+          if (res.code === 0) {
+            message.success('操作成功')
+            mainStore.updateById(id, data)
+          } else {
+            message.error(res.msg)
+          }
+        })
       },
-      hover: (e, item) => {
+      hover: (e, item, type) => {
 
       },
-      dropData: {}
+      dropData: {
+        date
+      }
     })
   })
 })
@@ -93,7 +141,7 @@ onMounted(() => {
     <div :class="[
         'time-period',
         index !== 0 ? 'top-border' : ''
-    ]" v-for="(i, index) in 24" ref="itemsRef">
+    ]" v-for="(i, index) in 24" :data-hour="index" ref="itemsRef">
       <n-scrollbar trigger="hover" :style="`max-height: ${timeHeight}px`">
         <CalendarDetailItem v-if="timeList[index]?.list" v-for="item in timeList[index].list" :date="date"
                             :startTime="timeList[index].startTime"

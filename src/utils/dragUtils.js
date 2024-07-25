@@ -5,6 +5,7 @@ export function useDrag(options) {
     }
 
     node.addEventListener('dragstart', e => {
+        e.stopPropagation()
         sessionStorage.setItem('item', JSON.stringify(item))
         sessionStorage.setItem('type', JSON.stringify(type))
         const bgImage = new Image()
@@ -13,11 +14,12 @@ export function useDrag(options) {
     })
 
     node.addEventListener('dragend', e => {
+        e.stopPropagation()
         try {
             const dropData = JSON.parse(sessionStorage.getItem('dropData'))
-            end(e, item, dropData)
+            end(e, item, dropData, type)
         } catch (error) {
-            end(e, item, {})
+            end(e, item, {}, type)
         }
         sessionStorage.removeItem('item')
         sessionStorage.removeItem('type')
@@ -41,11 +43,12 @@ export function useDrop(options) {
     }
 
     node.addEventListener('drop', e => {
+        e.stopPropagation()
         const item = JSON.parse(sessionStorage.getItem('item'))
         const type = JSON.parse(sessionStorage.getItem('type'))
         if (accept.indexOf(type) !== -1) {
             sessionStorage.setItem('dropData', JSON.stringify(dropData))
-            drop(e, item)
+            drop(e, item, type)
         }
     })
 
@@ -55,7 +58,7 @@ export function useDrop(options) {
         const type = JSON.parse(sessionStorage.getItem('type'))
         if (accept.indexOf(type) !== -1) {
             sessionStorage.setItem('dropData', JSON.stringify(dropData))
-            hover(e, item)
+            hover(e, item, type)
         }
     }) : ''
 }

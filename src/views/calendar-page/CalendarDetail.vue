@@ -1,5 +1,5 @@
 <script setup>
-import {onBeforeUnmount, onMounted, reactive, ref} from "vue";
+import {onBeforeUnmount, onMounted, reactive, ref, watch} from "vue";
 import CalendarDetailItems from "@/components/CalendarDetailItems.vue";
 import {getDaysByNum, myDayjs as dayjs} from "@/utils/dayUtils";
 import {NDatePicker, NSpace, NScrollbar} from "naive-ui";
@@ -13,6 +13,11 @@ const showDay = reactive([])
 const timeHeight = ref(100)
 const mainStore = useMainStore()
 const isLoading = ref(true)
+const key = ref(0)
+
+watch(() => mainStore.dataList, (newVal, oldVal) => {
+  key.value += 1
+}, {deep: true})
 
 function keyUpEvent(e) {
   const keyCode = e.keyCode;
@@ -110,7 +115,7 @@ onBeforeUnmount(() => {
             </n-space>
           </div>
           <div v-if="!isLoading" class="calendar-detail-list" v-for="(item, index) in showDay">
-            <CalendarDetailItems :timeHeight="timeHeight" :date="item" :index="index" :dataList="mainStore.dataList[index]"/>
+            <CalendarDetailItems :timeHeight="timeHeight" :date="item" :index="index" :dataList="mainStore.dataList[index]" :key="key"/>
           </div>
         </div>
       </n-scrollbar>
