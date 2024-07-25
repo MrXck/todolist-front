@@ -395,7 +395,7 @@ function endTodo() {
   background-color: white;
   top: 0;
   left: 0;
-  z-index: 100;
+  z-index: 900;
   border-radius: .25rem;
   box-shadow: 0 1px 2px -2px rgba(0, 0, 0, 0.08), 0 3px 6px 0 rgba(0, 0, 0, 0.06), 0 5px 12px 4px rgba(0, 0, 0, 0.04);
   transition: all 0.5s;

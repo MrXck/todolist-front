@@ -28,6 +28,8 @@ export const useMainStore = defineStore('main', {
                 enableEmail: false,
                 noticeType: 1,
                 cronNum: null,
+                planStartTime: null,
+                planEndTime: null,
             },
             panelPosition: {
                 x: 0,

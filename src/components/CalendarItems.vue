@@ -103,7 +103,7 @@ function touchstart(e) {
 
   timer = setTimeout(() => {
     showPanel(e)
-  }, 300)
+  }, 2000)
 }
 
 function touchend(e) {
@@ -131,6 +131,8 @@ function showPanel(e) {
   mainStore.panel.endDoTime = null
   mainStore.panel.noticeType = 1
   mainStore.panel.cronNum = null
+  mainStore.panel.planStartTime = null
+  mainStore.panel.planEndTime = null
   mainStore.selectedId = 0
   mainStore.calcPosition(e)
 }

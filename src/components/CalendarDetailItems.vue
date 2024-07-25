@@ -26,6 +26,7 @@ const {timeHeight, index, date, dataList} = defineProps({
   }
 })
 
+let timer = null
 const itemsRef = ref()
 const timeList = reactive([])
 const message = useMessage()
@@ -79,6 +80,39 @@ function init() {
       list
     })
   }
+}
+
+function showPanel(e) {
+  mainStore.showPanel = true
+  mainStore.panel.dayDiff = dayjs(date).startOf('day').diff(dayjs().startOf('day'), 'day')
+  mainStore.panel.startTime = dayjs(date).format(DateFormat)
+  mainStore.panel.endTime = dayjs(date).format(DateFormat)
+  mainStore.panel.title = ''
+  mainStore.panel.detail = ''
+  mainStore.panel.predictTime = "00:00:00"
+  mainStore.panel.enableEmail = false
+  mainStore.panel.id = 0
+  mainStore.panel.priority = 5
+  mainStore.panel.isDone = false
+  mainStore.panel.taskBoxId = null
+  mainStore.panel.startDoTime = null
+  mainStore.panel.endDoTime = null
+  mainStore.panel.noticeType = 1
+  mainStore.panel.cronNum = null
+  mainStore.selectedId = 0
+  mainStore.calcPosition(e)
+}
+
+function touchstart(e) {
+  clearTimeout(timer)
+
+  timer = setTimeout(() => {
+    showPanel(e)
+  }, 2000)
+}
+
+function touchend(e) {
+  clearTimeout(timer)
 }
 
 onMounted(() => {
@@ -147,7 +181,10 @@ onMounted(() => {
             'first',
             'calendar-detail-items',
             index !== 0 ? 'not-left-border' : ''
-        ]">
+        ]"
+       @contextmenu.prevent="showPanel"
+       @touchstart="touchstart"
+       @touchend="touchend">
     <div :class="[
         'time-period',
         index !== 0 ? 'top-border' : ''

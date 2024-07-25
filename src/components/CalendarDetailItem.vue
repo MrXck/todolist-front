@@ -99,10 +99,15 @@ onMounted(() => {
       isStart ? 'top-border is-start' : '',
       isEnd ? 'bottom-border' : '',
       transformBottom < 25 ? 'is-end' : '',
-      !data.isDone && dayjs(data.endTime).startOf('day').isBefore(dayjs(new Date()).startOf('day')) ? 'delay' : ''
-      ]" ref="itemRef" :style="`margin-left: ${num * 20}px;z-index: ${num * 20};transform:`" draggable="true" @click="showPanel">
+      !data.isDone && dayjs(data.endTime).startOf('day').isBefore(dayjs(new Date()).startOf('day')) ? 'delay' : '',
+      mainStore.selectedId === data.id ? 'selected' : '',
+      mainStore.selectedIds.indexOf(data.id) !== -1 ? 'selected' : '',
+      ]" ref="itemRef" :style="`margin-left: ${num * 20}px;z-index: ${num * 20};transform:`" draggable="true"
+       @click="showPanel">
     <CalendarDetailBefore v-if="isStart" :date="date" :data="data"/>
-    <div class="todo-title" v-if="isStart">{{ data.title }} <span class="period" v-if="isStart">{{`${data.planStartTime} - ${data.planEndTime}`}}</span></div>
+    <div class="todo-title" v-if="isStart">{{ data.title }} <span class="period"
+                                                                  v-if="isStart">{{ `${data.planStartTime} - ${data.planEndTime}` }}</span>
+    </div>
     <CalendarDetailAfter v-if="isEnd" :date="date" :data="data"/>
   </div>
 </template>
@@ -116,7 +121,7 @@ onMounted(() => {
   background-color: #85f594;
   --bg-color: #85f594;
   cursor: pointer;
-  height: v-bind(transformBottom + 'px');
+  height: v-bind(transformBottom+ 'px');
   position: absolute;
   width: 100%;
   padding-left: 6px;
@@ -147,7 +152,7 @@ onMounted(() => {
 }
 
 .is-start {
-  transform: translateY(v-bind(transformTop + 'px'));
+  transform: translateY(v-bind(transformTop+ 'px'));
 }
 
 .is-end {
@@ -199,5 +204,10 @@ onMounted(() => {
   font-size: 10px;
   filter: brightness(.6);
   vertical-align: text-bottom;
+}
+
+.selected {
+  filter: brightness(0.92) !important;
+  z-index: 500 !important;
 }
 </style>
