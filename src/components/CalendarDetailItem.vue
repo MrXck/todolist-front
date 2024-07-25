@@ -93,6 +93,7 @@ onMounted(() => {
 <template>
   <div :class="[
       'calendar-detail-item',
+      data.isDone ? 'done' : '',
       data.priority === 1 ? 'first' : '',
       data.priority === 2 ? 'second' : '',
       data.priority === 3 ? 'third' : '',
@@ -211,5 +212,10 @@ onMounted(() => {
 .selected {
   filter: brightness(0.92) !important;
   z-index: 500 !important;
+}
+
+.calendar-detail-item.done {
+  background-color: #a6e7ff !important;
+  --bg-color: #a6e7ff;
 }
 </style>
