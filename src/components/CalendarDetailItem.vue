@@ -39,10 +39,12 @@ const transformTop = computed(() => {
   const minute = dayjs(`${data.startTime} ${data.planStartTime}`).minute()
   return isStart.value ? Math.floor(minute / 60 * (timeHeight - 1)) : 0
 })
-
 const transformBottom = computed(() => {
   const minute = dayjs(`${data.endTime} ${data.planEndTime}`).minute()
   return Math.max(isEnd.value ? Math.floor(minute / 60 * (timeHeight - 1)) : timeHeight - 1 - transformTop.value, 0)
+})
+const showLines = computed(() => {
+  return Math.floor((transformBottom.value - 18) / 16)
 })
 
 onMounted(() => {
@@ -73,7 +75,7 @@ onMounted(() => {
       transformBottom < 25 ? 'is-end' : ''
       ]" ref="itemRef" :style="`margin-left: ${num * 20}px;z-index: ${num * 20};transform:`" draggable="true">
     <CalendarDetailBefore v-if="isStart" :date="date" :data="data"/>
-    <div style="padding: 0 4px;flex: 1">{{ data.title }} <span class="period" v-if="isStart">{{`${data.planStartTime} - ${data.planEndTime}`}}</span></div>
+    <div class="todo-title" v-if="isStart">{{ data.title }} <span class="period" v-if="isStart">{{`${data.planStartTime} - ${data.planEndTime}`}}</span></div>
     <CalendarDetailAfter v-if="isEnd" :date="date" :data="data"/>
   </div>
 </template>
@@ -91,6 +93,20 @@ onMounted(() => {
   position: absolute;
   width: 100%;
   padding-left: 6px;
+  --font-size: 16px;
+}
+
+.todo-title {
+  /* 多行文本溢出 */
+  /* 多行区域一共显示的行数 */
+  -webkit-line-clamp: v-bind(showLines);
+  /* 将溢出部分换成... */
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  padding: 0 4px;
+  flex: 1;
+  overflow: hidden;
 }
 
 .calendar-detail-item:before {
@@ -148,6 +164,7 @@ onMounted(() => {
 
 .period {
   font-size: 10px;
-  filter: blur(10%);
+  filter: brightness(.6);
+  vertical-align: text-bottom;
 }
 </style>

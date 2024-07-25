@@ -101,6 +101,7 @@ onMounted(() => {
         if (type === 'before') {
           if (newBeforeDateTime.isAfter(oldAfterDateTime)) {
             message.error(`开始时间不能大于结束时间`)
+            return
           } else {
             data.planStartTime = newBeforeDateTime.format(TimeFormat)
             data.startTime = newBeforeDateTime.format(DateFormat)
@@ -108,6 +109,7 @@ onMounted(() => {
         } else if (type === 'after') {
           if (newAfterDateTime.isBefore(oldBeforeDateTime)) {
             message.error(`结束时间不能小于开始时间`)
+            return
           } else {
             data.planEndTime = newAfterDateTime.format(TimeFormat)
             data.endTime = newAfterDateTime.format(DateFormat)
