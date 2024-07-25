@@ -1,8 +1,8 @@
 <script setup>
-import {onBeforeUnmount, onMounted, reactive, ref, watch} from "vue";
+import {onBeforeUnmount, onMounted, provide, reactive, ref, watch} from "vue";
 import CalendarDetailItems from "@/components/CalendarDetailItems.vue";
 import {getDaysByNum, myDayjs as dayjs} from "@/utils/dayUtils";
-import {NDatePicker, NSpace, NScrollbar} from "naive-ui";
+import {NDatePicker, NSpace, NScrollbar, NCheckbox} from "naive-ui";
 import {DateFormat, GetTodoByMonthURL} from "@/utils/Constant";
 import request from "@/utils/request";
 import {useMainStore} from "@/store";
@@ -15,6 +15,14 @@ const timeHeight = ref(100)
 const mainStore = useMainStore()
 const isLoading = ref(true)
 const key = ref(0)
+const showPriority = ref({
+  '1': true,
+  '2': true,
+  '3': true,
+  '4': true,
+  '5': true,
+})
+provide('showPriority', showPriority)
 
 watch(() => mainStore.dataList, (newVal, oldVal) => {
   key.value += 1
@@ -81,7 +89,13 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <n-space justify="end">
+  <n-space justify="end" align="center">
+    <n-checkbox v-model:checked="showPriority['5']">一般</n-checkbox>
+    <n-checkbox v-model:checked="showPriority['4']">紧急</n-checkbox>
+    <n-checkbox v-model:checked="showPriority['3']">非常紧急</n-checkbox>
+    <n-checkbox v-model:checked="showPriority['2']">重要</n-checkbox>
+    <n-checkbox v-model:checked="showPriority['1']">非常重要</n-checkbox>
+
     <n-date-picker type="date" format="yyyy-MM-dd" :formatted-value="day" @update:value="updateDay"/>
   </n-space>
   <div id="calendar" class="container">

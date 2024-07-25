@@ -1,5 +1,5 @@
 <script setup>
-import {computed, onMounted, ref} from "vue";
+import {computed, inject, onMounted, ref} from "vue";
 import {useDrag} from "@/utils/dragUtils";
 import CalendarDetailBefore from "@/components/CalendarDetailBefore.vue";
 import CalendarDetailAfter from "@/components/CalendarDetailAfter.vue";
@@ -49,6 +49,7 @@ const transformBottom = computed(() => {
 const showLines = computed(() => {
   return Math.floor((transformBottom.value - 16) / 16)
 })
+const showPriority = inject('showPriority')
 
 function showPanel(e) {
   if (mainStore.altDown) {
@@ -75,6 +76,7 @@ function showPanel(e) {
 }
 
 onMounted(() => {
+  console.log(inject('showPriority'))
   useDrag({
     type: 'move',
     node: itemRef.value,
@@ -103,6 +105,7 @@ onMounted(() => {
       mainStore.selectedId === data.id ? 'selected' : '',
       mainStore.selectedIds.indexOf(data.id) !== -1 ? 'selected' : '',
       ]" ref="itemRef" :style="`margin-left: ${num * 20}px;z-index: ${num * 20};transform:`" draggable="true"
+       v-if="showPriority[data.priority]"
        @click="showPanel">
     <CalendarDetailBefore v-if="isStart" :date="date" :data="data"/>
     <div class="todo-title" v-if="isStart">{{ data.title }} <span class="period"
