@@ -45,8 +45,8 @@
         <n-space align="center" style="margin-bottom: 4px">
           <n-space align="center" justify="center">
             持续时间
-            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.planStartTime" placeholder="预计开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
-            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.planEndTime" placeholder="预计开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
+            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.planStartTime" placeholder="开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
+            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.planEndTime" placeholder="结束时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
           </n-space>
         </n-space>
         <n-space align="center" style="margin-bottom: 4px">
@@ -161,8 +161,8 @@
         <n-space align="center" style="margin-bottom: 4px">
           <n-space align="center" justify="center">
             持续时间
-            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.planStartTime" placeholder="预计开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
-            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.planEndTime" placeholder="预计开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
+            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.planStartTime" placeholder="开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
+            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.planEndTime" placeholder="结束时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
           </n-space>
         </n-space>
         <n-space align="center" style="margin-bottom: 4px">
