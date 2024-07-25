@@ -73,7 +73,7 @@ onMounted(() => {
       transformBottom < 25 ? 'is-end' : ''
       ]" ref="itemRef" :style="`margin-left: ${num * 20}px;z-index: ${num * 20};transform:`" draggable="true">
     <CalendarDetailBefore v-if="isStart" :date="date" :data="data"/>
-    <div style="padding: 0 4px">{{ data.title }} <span class="period" v-if="isStart">{{`${data.planStartTime} - ${data.planEndTime}`}}</span></div>
+    <div style="padding: 0 4px;flex: 1">{{ data.title }} <span class="period" v-if="isStart">{{`${data.planStartTime} - ${data.planEndTime}`}}</span></div>
     <CalendarDetailAfter v-if="isEnd" :date="date" :data="data"/>
   </div>
 </template>
@@ -108,7 +108,7 @@ onMounted(() => {
 }
 
 .is-end {
-  font-size: v-bind((transformBottom - 3) * 0.8 + 'px');
+  font-size: 0;
 }
 
 .bottom-border {

@@ -104,7 +104,6 @@ onMounted(() => {
           } else {
             data.planStartTime = newBeforeDateTime.format(TimeFormat)
             data.startTime = newBeforeDateTime.format(DateFormat)
-            mainStore.updateById(id, data)
           }
         } else if (type === 'after') {
           if (newAfterDateTime.isBefore(oldBeforeDateTime)) {
@@ -112,7 +111,6 @@ onMounted(() => {
           } else {
             data.planEndTime = newAfterDateTime.format(TimeFormat)
             data.endTime = newAfterDateTime.format(DateFormat)
-            mainStore.updateById(id, data)
           }
         } else if (type === 'move') {
           const second = oldAfterDateTime.diff(oldBeforeDateTime, 'second')
@@ -121,7 +119,6 @@ onMounted(() => {
           const afterDateTime = newBeforeDateTime.add(second, 'second')
           data.endTime = afterDateTime.format(DateFormat)
           data.planEndTime = afterDateTime.format(TimeFormat)
-          mainStore.updateById(id, data)
         }
         request.post(UpdateTodoByIdURL, data).then(res => {
           if (res.code === 0) {
@@ -167,7 +164,6 @@ onMounted(() => {
 .calendar-detail-items {
   word-break: break-all;
   overflow: hidden;
-  height: 100%;
   flex: 1;
 }
 
