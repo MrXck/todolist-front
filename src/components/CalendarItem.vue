@@ -166,7 +166,7 @@ onMounted(() => {
 
 .calendar-item-item .first {
   color: #ec49a0;
-  background-color: #ffc9cb;
+  background-color: #ffb7d6;
 }
 
 .calendar-item-item .second {
@@ -185,7 +185,8 @@ onMounted(() => {
 }
 
 .calendar-item-item .delay {
-  background-color: #ffc8c8;
+  background-color: #e77e80;
+  color: #762224;
 }
 
 .bold {

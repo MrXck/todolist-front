@@ -6,6 +6,7 @@ import {NDatePicker, NSpace, NScrollbar} from "naive-ui";
 import {DateFormat, GetTodoByMonthURL} from "@/utils/Constant";
 import request from "@/utils/request";
 import {useMainStore} from "@/store";
+import Panel from "@/components/Panel.vue";
 
 const showNum = ref(7)
 const day = ref(dayjs(new Date()).format(DateFormat))
@@ -60,13 +61,20 @@ function updateShowDay() {
   })
 }
 
+const click = (e) => {
+  mainStore.showPanel = false
+  mainStore.selectedId = 0
+}
+
 onMounted(() => {
+  document.getElementById('calendar').addEventListener('click', click)
   window.addEventListener('keyup', keyUpEvent)
   init()
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('keyup', keyUpEvent)
+  document.getElementById('calendar').removeEventListener('click', click)
 })
 </script>
 
@@ -74,7 +82,7 @@ onBeforeUnmount(() => {
   <n-space justify="end">
     <n-date-picker type="date" format="yyyy-MM-dd" :formatted-value="day" @update:value="updateDay"/>
   </n-space>
-  <div class="container">
+  <div id="calendar" class="container">
     <div style="display: flex;flex-direction: column;flex: 1;">
       <n-space justify="space-around" style="margin-left: 60px;" item-style="width: 100%" :wrap="false">
         <n-space justify="center" v-for="item in showDay">
@@ -120,6 +128,7 @@ onBeforeUnmount(() => {
         </div>
       </n-scrollbar>
     </div>
+    <Panel/>
   </div>
 </template>
 

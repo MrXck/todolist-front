@@ -4,6 +4,8 @@ import {useDrag} from "@/utils/dragUtils";
 import CalendarDetailBefore from "@/components/CalendarDetailBefore.vue";
 import CalendarDetailAfter from "@/components/CalendarDetailAfter.vue";
 import {myDayjs as dayjs} from "@/utils/dayUtils";
+import {removeTodo} from "@/utils/apiUtils";
+import {useMainStore} from "@/store";
 
 const {date, startTime, endTime, data, num, timeHeight} = defineProps({
   date: {
@@ -32,6 +34,7 @@ const {date, startTime, endTime, data, num, timeHeight} = defineProps({
   },
 })
 
+const mainStore = useMainStore()
 const isStart = ref(dayjs(`${data.startTime} ${data.planStartTime}`).isBetween(dayjs(`${date} ${startTime}`), dayjs(`${date} ${endTime}`), null, []))
 const isEnd = ref(dayjs(`${data.endTime} ${data.planEndTime}`).isBetween(dayjs(`${date} ${startTime}`), dayjs(`${date} ${endTime}`), null, []))
 const itemRef = ref()
@@ -47,6 +50,30 @@ const showLines = computed(() => {
   return Math.floor((transformBottom.value - 18) / 16)
 })
 
+function showPanel(e) {
+  if (mainStore.altDown) {
+    removeTodo(data.id).then(res => {
+      if (res.code === 0) {
+        message.success('操作成功')
+        mainStore.data.splice(mainStore.data.indexOf(mainStore.data.find(item => item.id === data.id)), 1)
+        mainStore.update()
+        mainStore.showPanel = false
+      } else {
+        message.error(res.msg)
+      }
+    })
+  } else {
+    e.stopPropagation()
+    e.preventDefault()
+    mainStore.showPanel = true
+    mainStore.selectedId = data.id
+    const item = mainStore.data.find(item => item.id === data.id)
+    Object.assign(mainStore.panel, item)
+    mainStore.panel.dayDiff = dayjs(item.endTime).startOf('day').diff(dayjs(new Date()).startOf('day'), 'day')
+    mainStore.calcPosition(e)
+  }
+}
+
 onMounted(() => {
   useDrag({
     type: 'move',
@@ -58,7 +85,6 @@ onMounted(() => {
       console.log('item', e, item, dropData)
     }
   })
-
 })
 
 </script>
@@ -66,14 +92,15 @@ onMounted(() => {
 <template>
   <div :class="[
       'calendar-detail-item',
-      data.priority === 1 ? 'first bold' : '',
-      data.priority === 2 ? 'second bold' : '',
-      data.priority === 3 ? 'third bold' : '',
-      data.priority === 4 ? 'fourth bold' : '',
+      data.priority === 1 ? 'first' : '',
+      data.priority === 2 ? 'second' : '',
+      data.priority === 3 ? 'third' : '',
+      data.priority === 4 ? 'fourth' : '',
       isStart ? 'top-border is-start' : '',
       isEnd ? 'bottom-border' : '',
-      transformBottom < 25 ? 'is-end' : ''
-      ]" ref="itemRef" :style="`margin-left: ${num * 20}px;z-index: ${num * 20};transform:`" draggable="true">
+      transformBottom < 25 ? 'is-end' : '',
+      !data.isDone && dayjs(data.endTime).startOf('day').isBefore(dayjs(new Date()).startOf('day')) ? 'delay' : ''
+      ]" ref="itemRef" :style="`margin-left: ${num * 20}px;z-index: ${num * 20};transform:`" draggable="true" @click="showPanel">
     <CalendarDetailBefore v-if="isStart" :date="date" :data="data"/>
     <div class="todo-title" v-if="isStart">{{ data.title }} <span class="period" v-if="isStart">{{`${data.planStartTime} - ${data.planEndTime}`}}</span></div>
     <CalendarDetailAfter v-if="isEnd" :date="date" :data="data"/>
@@ -139,8 +166,8 @@ onMounted(() => {
 
 .calendar-detail-item.first {
   color: #ec49a0;
-  background-color: #ffc9cb;
-  --bg-color: #ffc9cb;
+  background-color: #ffb7d6;
+  --bg-color: #ffb7d6;
   border: 0;
 }
 
@@ -160,6 +187,12 @@ onMounted(() => {
   color: #4685da;
   background-color: #afc8ff;
   --bg-color: #afc8ff;
+}
+
+.calendar-detail-item.delay {
+  background-color: #e77e80;
+  color: #762224;
+  --bg-color: #e77e80;
 }
 
 .period {
