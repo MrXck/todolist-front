@@ -44,7 +44,14 @@
       <div class="panel-body">
         <n-space align="center" style="margin-bottom: 4px">
           <n-space align="center" justify="center">
-            邮件提醒
+            持续时间
+            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.planStartTime" placeholder="预计开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
+            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.planEndTime" placeholder="预计开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
+          </n-space>
+        </n-space>
+        <n-space align="center" style="margin-bottom: 4px">
+          <n-space align="center" justify="center">
+            邮件提醒(持续时间即为提醒时间)
             <n-switch v-model:value="mainStore.panel.enableEmail"/>
           </n-space>
         </n-space>
@@ -54,10 +61,10 @@
             <n-select size="small" :options="NoticeTypeOptions" v-model:value="mainStore.panel.noticeType" style="width: 100px"></n-select>
             <n-select v-show="NoticeTypeOptions.find(item => item.value === mainStore.panel.noticeType).child.length !== 0" size="small" :options="NoticeTypeOptions.find(item => item.value === mainStore.panel.noticeType).child" v-model:value="mainStore.panel.cronNum" style="width: 100px"></n-select>
           </n-space>
-          <n-space justify="center">
-            提醒时间
-            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.predictTime" placeholder="预计开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
-          </n-space>
+<!--          <n-space justify="center">-->
+<!--            提醒时间-->
+<!--            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.predictTime" placeholder="预计开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>-->
+<!--          </n-space>-->
         </n-space>
         <n-space justify="space-between" v-if="mainStore.panel.id !== 0" style="margin-bottom: 4px">
           <n-space justify="start" align="center">
@@ -153,6 +160,13 @@
       <div class="panel-body">
         <n-space align="center" style="margin-bottom: 4px">
           <n-space align="center" justify="center">
+            持续时间
+            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.planStartTime" placeholder="预计开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
+            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.planEndTime" placeholder="预计开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
+          </n-space>
+        </n-space>
+        <n-space align="center" style="margin-bottom: 4px">
+          <n-space align="center" justify="center">
             邮件提醒
             <n-switch v-model:value="mainStore.panel.enableEmail"/>
           </n-space>
@@ -163,10 +177,10 @@
             <n-select size="small" :options="NoticeTypeOptions" v-model:value="mainStore.panel.noticeType" style="width: 100px"></n-select>
             <n-select v-show="NoticeTypeOptions.find(item => item.value === mainStore.panel.noticeType).child.length !== 0" size="small" :options="NoticeTypeOptions.find(item => item.value === mainStore.panel.noticeType).child" v-model:value="mainStore.panel.cronNum" style="width: 100px"></n-select>
           </n-space>
-          <n-space justify="center">
-            提醒时间
-            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.predictTime" placeholder="预计开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
-          </n-space>
+<!--          <n-space justify="center">-->
+<!--            提醒时间-->
+<!--            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.predictTime" placeholder="预计开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>-->
+<!--          </n-space>-->
         </n-space>
         <n-space justify="space-between" v-if="mainStore.panel.id !== 0" style="margin-bottom: 4px">
           <n-space justify="start" align="center">

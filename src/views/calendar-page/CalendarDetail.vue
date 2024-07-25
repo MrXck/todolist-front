@@ -25,10 +25,12 @@ function keyUpEvent(e) {
   console.log(keyCode)
   if (keyCode === 39) {
     showNum.value += 1
+    updateShowDay()
   } else if (keyCode === 37) {
     showNum.value -= 1
+    updateShowDay()
   }
-  updateShowDay()
+
 }
 
 function init() {

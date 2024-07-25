@@ -82,7 +82,7 @@ function init() {
   }
 }
 
-function showPanel(e) {
+function showPanel(e, hour) {
   mainStore.showPanel = true
   mainStore.panel.dayDiff = dayjs(date).startOf('day').diff(dayjs().startOf('day'), 'day')
   mainStore.panel.startTime = dayjs(date).format(DateFormat)
@@ -101,13 +101,18 @@ function showPanel(e) {
   mainStore.panel.cronNum = null
   mainStore.selectedId = 0
   mainStore.calcPosition(e)
+  const rect = e.target.getBoundingClientRect()
+  const minute = Math.ceil((e.clientY - rect.top) / (rect.height) * 60)
+  const time = dayjs(`${mainStore.panel.startTime} ${hour}:${minute}:00`)
+  mainStore.panel.planStartTime = time.format(TimeFormat)
+  mainStore.panel.planEndTime = time.format(TimeFormat)
 }
 
-function touchstart(e) {
+function touchstart(e, hour) {
   clearTimeout(timer)
 
   timer = setTimeout(() => {
-    showPanel(e)
+    showPanel(e, hour)
   }, 2000)
 }
 
@@ -181,14 +186,14 @@ onMounted(() => {
             'first',
             'calendar-detail-items',
             index !== 0 ? 'not-left-border' : ''
-        ]"
-       @contextmenu.prevent="showPanel"
-       @touchstart="touchstart"
-       @touchend="touchend">
+        ]">
     <div :class="[
         'time-period',
         index !== 0 ? 'top-border' : ''
-    ]" v-for="(i, index) in 24" :data-hour="index" ref="itemsRef">
+    ]" v-for="(i, index) in 24" :data-hour="index.toString().padStart(2, '0')" ref="itemsRef"
+         @contextmenu.prevent="showPanel($event, index.toString().padStart(2, '0'))"
+         @touchstart="touchstart($event, index.toString().padStart(2, '0'))"
+         @touchend="touchend">
       <n-scrollbar trigger="hover" :style="`max-height: ${timeHeight}px`">
         <CalendarDetailItem v-if="timeList[index]?.list" v-for="item in timeList[index].list" :date="date"
                             :startTime="timeList[index].startTime"

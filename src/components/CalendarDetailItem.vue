@@ -47,7 +47,7 @@ const transformBottom = computed(() => {
   return Math.max(isEnd.value ? Math.floor(minute / 60 * (timeHeight - 1)) : timeHeight - 1 - transformTop.value, 0)
 })
 const showLines = computed(() => {
-  return Math.floor((transformBottom.value - 18) / 16)
+  return Math.floor((transformBottom.value - 16) / 16)
 })
 
 function showPanel(e) {
