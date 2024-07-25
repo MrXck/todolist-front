@@ -76,7 +76,6 @@ function showPanel(e) {
 }
 
 onMounted(() => {
-  console.log(inject('showPriority'))
   useDrag({
     type: 'move',
     node: itemRef.value,

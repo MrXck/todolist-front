@@ -3,7 +3,7 @@ import {onBeforeUnmount, onMounted, provide, reactive, ref, watch} from "vue";
 import CalendarDetailItems from "@/components/CalendarDetailItems.vue";
 import {getDaysByNum, myDayjs as dayjs} from "@/utils/dayUtils";
 import {NDatePicker, NSpace, NScrollbar, NCheckbox} from "naive-ui";
-import {DateFormat, GetTodoByMonthURL} from "@/utils/Constant";
+import {DateFormat, GetTodoByMonthURL, WeekdayFormat} from "@/utils/Constant";
 import request from "@/utils/request";
 import {useMainStore} from "@/store";
 import Panel from "@/components/Panel.vue";
@@ -89,25 +89,33 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <n-space justify="end" align="center">
-    <n-checkbox v-model:checked="showPriority['5']">一般</n-checkbox>
-    <n-checkbox v-model:checked="showPriority['4']">紧急</n-checkbox>
-    <n-checkbox v-model:checked="showPriority['3']">非常紧急</n-checkbox>
-    <n-checkbox v-model:checked="showPriority['2']">重要</n-checkbox>
-    <n-checkbox v-model:checked="showPriority['1']">非常重要</n-checkbox>
-
-    <n-date-picker type="date" format="yyyy-MM-dd" :formatted-value="day" @update:value="updateDay"/>
+  <n-space justify="space-between">
+    <n-space justify="start">
+      <div style="font-size: 30px">
+        {{`${day.split('-')[0]}年${day.split('-')[1]}月`}}
+      </div>
+    </n-space>
+    <n-space justify="end" align="center">
+      <n-checkbox v-model:checked="showPriority['5']">一般</n-checkbox>
+      <n-checkbox v-model:checked="showPriority['4']">紧急</n-checkbox>
+      <n-checkbox v-model:checked="showPriority['3']">非常紧急</n-checkbox>
+      <n-checkbox v-model:checked="showPriority['2']">重要</n-checkbox>
+      <n-checkbox v-model:checked="showPriority['1']">非常重要</n-checkbox>
+      <n-date-picker type="date" format="yyyy-MM-dd" :formatted-value="day" @update:value="updateDay"/>
+    </n-space>
   </n-space>
   <div id="calendar" class="container">
     <div style="display: flex;flex-direction: column;flex: 1;">
       <n-space justify="space-around" style="margin-left: 60px;" item-style="width: 100%" :wrap="false">
         <n-space justify="center" v-for="item in showDay">
           <n-space justify="center">
-            {{ item }}
+            {{ `${dayjs(item).format(WeekdayFormat)}` }}<span :class="[
+                item === day ? 'now' : ''
+            ]">{{item.split('-')[2]}}</span>
           </n-space>
         </n-space>
       </n-space>
-      <n-scrollbar style="height: calc(100vh - 140px)">
+      <n-scrollbar style="height: calc(100vh - 155px)">
         <div class="content">
           <div class="time-line">
             <n-space vertical style="gap: 0" justify="space-around">
@@ -172,5 +180,17 @@ onBeforeUnmount(() => {
 .content {
   display: flex;
   margin-top: 10px;
+}
+
+.now {
+  background-color: #629bf8;
+  border-radius: 50%;
+  color: white;
+  padding: 3px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
