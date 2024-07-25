@@ -3,7 +3,7 @@ import {onBeforeUnmount, onMounted, provide, reactive, ref, watch} from "vue";
 import CalendarDetailItems from "@/components/CalendarDetailItems.vue";
 import {getDaysByNum, myDayjs as dayjs} from "@/utils/dayUtils";
 import {NDatePicker, NSpace, NScrollbar, NCheckbox} from "naive-ui";
-import {DateFormat, GetTodoByMonthURL, WeekdayFormat} from "@/utils/Constant";
+import {DateFormat, DeleteTodoBatchURL, GetTodoByMonthURL, WeekdayFormat} from "@/utils/Constant";
 import request from "@/utils/request";
 import {useMainStore} from "@/store";
 import Panel from "@/components/Panel.vue";
@@ -28,7 +28,7 @@ watch(() => mainStore.dataList, (newVal, oldVal) => {
   key.value += 1
 }, {deep: true})
 
-function keyUpEvent(e) {
+function keyDownEvent(e) {
   const keyCode = e.keyCode;
   console.log(keyCode)
   if (keyCode === 39) {
@@ -37,8 +37,30 @@ function keyUpEvent(e) {
   } else if (keyCode === 37) {
     showNum.value -= 1
     updateShowDay()
+  } else if (e.keyCode === 17) {
+    mainStore.keyDown = true
+  } else if (e.keyCode === 18) {
+    mainStore.altDown = true
   }
 
+}
+
+function keyUpEvent(e) {
+  if (e.keyCode === 17) {
+    mainStore.keyDown = false
+  } else if (e.keyCode === 18) {
+    mainStore.altDown = false
+  } else if (e.keyCode === 46) {
+    if (mainStore.selectedIds.length === 0) {
+      return
+    }
+    request.post(DeleteTodoBatchURL, {todoIds: mainStore.selectedIds}).then(res => {
+      if (res.code === 0) {
+        message.success("操作成功")
+        init()
+      }
+    })
+  }
 }
 
 function init() {
@@ -79,11 +101,13 @@ const click = (e) => {
 onMounted(() => {
   document.getElementById('calendar').addEventListener('click', click)
   window.addEventListener('keyup', keyUpEvent)
+  window.addEventListener('keydown', keyDownEvent)
   init()
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('keyup', keyUpEvent)
+  window.removeEventListener('keydown', keyDownEvent)
   document.getElementById('calendar').removeEventListener('click', click)
 })
 </script>

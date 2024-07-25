@@ -529,6 +529,9 @@ function keyUp(e) {
   } else if (e.keyCode === 18) {
     mainStore.altDown = false
   } else if (e.keyCode === 46) {
+    if (mainStore.selectedIds.length === 0) {
+      return
+    }
     request.post(DeleteTodoBatchURL, {todoIds: mainStore.selectedIds}).then(res => {
       if (res.code === 0) {
         message.success("操作成功")

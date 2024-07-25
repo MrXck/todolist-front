@@ -6,6 +6,7 @@ import CalendarDetailAfter from "@/components/CalendarDetailAfter.vue";
 import {myDayjs as dayjs} from "@/utils/dayUtils";
 import {removeTodo} from "@/utils/apiUtils";
 import {useMainStore} from "@/store";
+import {useMessage} from 'naive-ui'
 
 const {date, startTime, endTime, data, num, timeHeight} = defineProps({
   date: {
@@ -34,6 +35,7 @@ const {date, startTime, endTime, data, num, timeHeight} = defineProps({
   },
 })
 
+const message = useMessage()
 const mainStore = useMainStore()
 const isStart = ref(dayjs(`${data.startTime} ${data.planStartTime}`).isBetween(dayjs(`${date} ${startTime}`), dayjs(`${date} ${endTime}`), null, []))
 const isEnd = ref(dayjs(`${data.endTime} ${data.planEndTime}`).isBetween(dayjs(`${date} ${startTime}`), dayjs(`${date} ${endTime}`), null, []))

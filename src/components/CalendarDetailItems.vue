@@ -5,7 +5,7 @@ import {onMounted, reactive, ref} from "vue";
 import {useDrop} from "@/utils/dragUtils";
 import {myDayjs as dayjs} from "@/utils/dayUtils";
 import {useMainStore} from "@/store";
-import {DateFormat, TimeFormat, UpdateTodoByIdURL} from "@/utils/Constant";
+import {AddTodoURL, DateFormat, TimeFormat, UpdateTodoByIdURL} from "@/utils/Constant";
 import request from "@/utils/request";
 
 const {timeHeight, index, date, dataList} = defineProps({
@@ -161,14 +161,30 @@ onMounted(() => {
           data.endTime = afterDateTime.format(DateFormat)
           data.planEndTime = afterDateTime.format(TimeFormat)
         }
-        request.post(UpdateTodoByIdURL, data).then(res => {
-          if (res.code === 0) {
-            message.success('操作成功')
-            mainStore.updateById(id, data)
-          } else {
-            message.error(res.msg)
-          }
-        })
+        if (mainStore.keyDown) {
+          request.post(AddTodoURL, data).then(res => {
+            if (res.code === 0) {
+              data.id = res.data
+              message.success('操作成功')
+              mainStore.data.push(JSON.parse(JSON.stringify(data)))
+              mainStore.update()
+              setTimeout(() => {
+                mainStore.updateById(res.data, data)
+              })
+            } else {
+              message.error(res.msg)
+            }
+          })
+        } else {
+          request.post(UpdateTodoByIdURL, data).then(res => {
+            if (res.code === 0) {
+              message.success('操作成功')
+              mainStore.updateById(id, data)
+            } else {
+              message.error(res.msg)
+            }
+          })
+        }
       },
       hover: (e, item, type) => {
 
