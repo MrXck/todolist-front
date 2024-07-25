@@ -46,18 +46,29 @@ function init() {
         const dateEnd = dayjs(`${date} ${endTime}`)
         const dataStart = dayjs(`${item.startTime} ${item.planStartTime}`)
         const dataEnd = dayjs(`${item.endTime} ${item.planEndTime}`)
-        const isShow =
-            dateStart.isBetween(dataStart, dataEnd, null, [])
-            ||
-            dateEnd.isBetween(dataStart, dataEnd, null, [])
-            ||
-            (dateStart.isBefore(dataEnd) && dateEnd.isAfter(dataStart))
-        if (isShow) {
-          list.push({
-            data: item,
-            num
-          })
-          num += 1
+
+        if (!item.planStartTime || !item.planEndTime) {
+          if (startTime === '00:00:00') {
+            list.push({
+              data: item,
+              num
+            })
+            num += 1
+          }
+        } else {
+          const isShow =
+              dateStart.isBetween(dataStart, dataEnd, null, [])
+              ||
+              dateEnd.isBetween(dataStart, dataEnd, null, [])
+              ||
+              (dateStart.isBefore(dataEnd) && dateEnd.isAfter(dataStart))
+          if (isShow) {
+            list.push({
+              data: item,
+              num
+            })
+            num += 1
+          }
         }
       })
     }
