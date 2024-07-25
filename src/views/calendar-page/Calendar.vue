@@ -69,26 +69,35 @@
               <n-date-picker v-model:value="addData.timeRange" type="daterange" placeholder="开始日期"/>
             </n-space>
           </n-space>
-          <n-space>
+          <n-space vertical>
             <n-space>
               开启邮件提醒：
+            </n-space>
+            <n-space>
+              <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="addData.planStartTime" placeholder="开始时间" default-formatted-value="00:00:00"></n-time-picker>
+              <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="addData.planEndTime" placeholder="结束时间" default-formatted-value="00:00:00"></n-time-picker>
+            </n-space>
+          </n-space>
+          <n-space>
+            <n-space>
+              开启邮件提醒(持续时间即为提醒时间)：
             </n-space>
             <n-space>
               <n-switch v-model:value="addData.enableEmail"></n-switch>
             </n-space>
           </n-space>
-          <n-space v-show="addData.enableEmail" justify="center" vertical>
+          <n-space v-if="addData.enableEmail" justify="center" vertical>
             <n-space align="center">
               提醒类型
               <n-select :options="NoticeTypeOptions" v-model:value="addData.noticeType" style="width: 100px"></n-select>
               <n-select v-show="NoticeTypeOptions.find(item => item.value === addData.noticeType).child.length !== 0" :options="NoticeTypeOptions.find(item => item.value === addData.noticeType).child" v-model:value="addData.cronNum" style="width: 100px"></n-select>
             </n-space>
-            <n-space>
-              邮件提醒时间：
-            </n-space>
-            <n-space>
-              <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="addData.predictTime" default-formatted-value="00:00:00" placeholder="预计开始时间"/>
-            </n-space>
+<!--            <n-space>-->
+<!--              邮件提醒时间：-->
+<!--            </n-space>-->
+<!--            <n-space>-->
+<!--              <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="addData.predictTime" default-formatted-value="00:00:00" placeholder="预计开始时间"/>-->
+<!--            </n-space>-->
           </n-space>
           <n-space>
             <n-space vertical>
