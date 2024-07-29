@@ -106,12 +106,13 @@ onMounted(() => {
       !data.isDone && dayjs(data.endTime).startOf('day').isBefore(dayjs(new Date()).startOf('day')) ? 'delay' : '',
       mainStore.selectedId === data.id ? 'selected' : '',
       mainStore.selectedIds.indexOf(data.id) !== -1 ? 'selected' : '',
-      ]" ref="itemRef" :style="`margin-left: ${num * 20}px;z-index: ${num * 20};transform:`" draggable="true"
+      ]" ref="itemRef" :style="`margin-left: ${data._index * 20}px;z-index: ${data._index * 20};transform:`"
+       draggable="true"
        v-if="showPriority[data.priority]"
        @click="showPanel">
     <CalendarDetailBefore v-if="isStart" :date="date" :data="data"/>
-    <div class="todo-title" v-if="isStart">{{ data.title }} <span class="period"
-                                                                  v-if="isStart">{{ `${data.planStartTime} - ${data.planEndTime}` }}</span>
+    <div class="todo-title" v-if="isStart">{{ data.title }}
+      <span class="period">{{ `${data.planStartTime} - ${data.planEndTime}` }}</span>
     </div>
     <CalendarDetailAfter v-if="isEnd" :date="date" :data="data"/>
   </div>
