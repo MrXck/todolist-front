@@ -4,44 +4,45 @@
 
 <script setup>
 import {useDrag} from "vue3-dnd";
-import {onMounted} from "vue";
+import {inject, onMounted, toRefs} from "vue";
 import {getEmptyImage} from "react-dnd-html5-backend";
 import {myDayjs as dayjs} from "@/utils/dayUtils";
-import {useMainStore} from "@/store";
 import {useMessage} from "naive-ui";
 import request from "@/utils/request";
-import {UpdateTodoByIdURL} from "@/utils/Constant";
+import {TODO_FUNC_KEY, UpdateTodoByIdURL} from "@/utils/Constant";
 
 const message = useMessage()
-const mainStore = useMainStore()
-const {data, fullDate} = defineProps({
-  data: {
-    type: Object,
-    required: true
-  },
+const props = defineProps({
   fullDate: {
     type: String,
     required: true
   },
+  data: {
+    type: Object,
+    required: true
+  }
 })
+const {fullDate, data} = toRefs(props)
+const todoFunc = inject(TODO_FUNC_KEY)
 
 const [, drag, preview] = useDrag({
   type: 'backend',
   item: () => ({
-    id: data.id,
-    fullDate,
-    data
+    id: data.value.id,
+    fullDate: fullDate.value,
+    data: data.value
   }),
   end: (_item, monitor) => {
     const result = monitor.getDropResult()
-    const item = mainStore.data.find(item => item.id === data.id)
+    const item = data.value
     if (item.endTime === result.dropTime || dayjs(item.endTime).isAfter(dayjs(result.dropTime))) {
       let startTime = item.startTime
       item.startTime = result.dropTime
       request.post(UpdateTodoByIdURL, item).then(res => {
         if (res.code === 0) {
           message.success('操作成功')
-          mainStore.updateById(item.id, item)
+          console.log(todoFunc)
+          todoFunc.updateTodoById(item.id, item)
         } else {
           item.startTime = startTime
           message.error(res.msg)

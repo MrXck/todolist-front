@@ -32,7 +32,7 @@
     </div>
     <div class="calendar-item-content">
       <n-scrollbar trigger="hover">
-        <CalendarItem v-if="dataList !== undefined" :full-date="item.date" :data="data" v-for="(data, index) in dataList" :key="index"/>
+        <CalendarItem v-if="dataList !== undefined" :full-date="item.date" :data="data" v-for="(data, index) in dataList" :key="data.id"/>
       </n-scrollbar>
     </div>
   </div>
@@ -46,12 +46,12 @@ import {myDayjs as dayjs} from "@/utils/dayUtils";
 import {useMainStore} from "@/store";
 import {NScrollbar, NSpace} from 'naive-ui'
 import {DateFormat} from "@/utils/Constant";
-import {onBeforeUnmount, onMounted, ref} from "vue";
+import {onBeforeUnmount, onMounted, ref, toRefs} from "vue";
 
 const mainStore = useMainStore()
 const now = `${new Date().getFullYear()}-${(new Date().getMonth() + 1).toString().padStart(2, '0')}-${(new Date().getDate()).toString().padStart(2, '0')}`
 
-const {index, item: date, dataList} = defineProps({
+const props = defineProps({
   index: {
     type: Number,
     required: true
@@ -65,6 +65,7 @@ const {index, item: date, dataList} = defineProps({
     required: true
   }
 })
+const {index, item: date, dataList} = toRefs(props)
 
 let timer = null
 const showDetail = ref(null)
@@ -77,7 +78,7 @@ const [, drop] = useDrop({
   ],
   drop: () => ({
     // drag 侧可以通过 monitor.getDropResult() 拿到该值
-    dropTime: date.date,
+    dropTime: date.value.date,
   }),
   // 当拖拽组件经过组件上时调用该方法。
   hover: (item, monitor) => {
@@ -116,9 +117,9 @@ function isInDateRange(date, startDate, endDate) {
 
 function showPanel(e) {
   mainStore.showPanel = true
-  mainStore.panel.dayDiff = dayjs(date.date).startOf('day').diff(dayjs().startOf('day'), 'day')
-  mainStore.panel.startTime = dayjs(date.date).format(DateFormat)
-  mainStore.panel.endTime = dayjs(date.date).format(DateFormat)
+  mainStore.panel.dayDiff = dayjs(date.value.date).startOf('day').diff(dayjs().startOf('day'), 'day')
+  mainStore.panel.startTime = dayjs(date.value.date).format(DateFormat)
+  mainStore.panel.endTime = dayjs(date.value.date).format(DateFormat)
   mainStore.panel.title = ''
   mainStore.panel.detail = ''
   mainStore.panel.predictTime = "00:00:00"

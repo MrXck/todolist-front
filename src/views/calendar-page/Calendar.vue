@@ -38,10 +38,10 @@
       <n-grid-item style="padding-left: 8px">周五</n-grid-item>
       <n-grid-item style="padding-left: 8px">周六</n-grid-item>
       <n-grid-item v-for="(item, index) in list">
-        <CalendarItems :index="index" :item="item" :dataList="mainStore.dataList[index]" :key="key"/>
+        <CalendarItems :index="index" :item="item" :dataList="renderTodoList[index]" :key="item"/>
       </n-grid-item>
     </n-grid>
-    <Panel/>
+    <Panel @add="addTodo" @update="updateTodoById" @remove="removeTodoById" :data-list="todoList"/>
     <n-modal v-model:show="showAddModal">
       <n-card
           style="width: 600px;max-width: 100%"
@@ -169,7 +169,7 @@ import {
   NInputNumber,
   NTimePicker, NSwitch
 } from 'naive-ui'
-import {onBeforeUnmount, onMounted, reactive, ref, watch} from "vue"
+import {onBeforeUnmount, onMounted, provide, reactive, ref, watch, watchEffect} from "vue"
 import {getNextMonthDays, myDayjs as dayjs} from "@/utils/dayUtils";
 import {ArrowForwardOutline, ArrowBackOutline, Close} from "@vicons/ionicons5";
 import CalendarItems from "@/components/CalendarItems";
@@ -181,9 +181,10 @@ import {
   GetTodoByMonthURL,
   GenerateOptions,
   GenerateTypeDay,
-  BatchGenerateTodoURL, options, NoticeTypeOptions, DeleteTodoBatchURL
+  BatchGenerateTodoURL, options, NoticeTypeOptions, DeleteTodoBatchURL, TODO_FUNC_KEY
 } from "@/utils/Constant";
 import request from "@/utils/request";
+import {getRenderEventList} from "@/utils/todoListSortUtils";
 
 
 const date = ref(new Date())
@@ -207,11 +208,33 @@ const addData = ref({
   noticeType: 1,
   cronNum: null,
 })
+const todoList = ref([])
+const renderTodoList = ref([])
+provide(TODO_FUNC_KEY, {
+  updateTodoById,
+  addTodo,
+  removeTodoById,
+})
+
+watchEffect(async () => {
+  const {renderList} = getRenderEventList(list, todoList.value)
+  renderTodoList.value = renderList
+})
 
 
-watch(() => mainStore.dataList, (newVal, oldVal) => {
-  key.value += 1
-}, {deep: true})
+function updateTodoById(id, todo) {
+  let data = todoList.value.find(item => item.id === id)
+  Object.assign(data, todo)
+  delete data['_index']
+}
+
+function addTodo(todo) {
+  todoList.value.push(todo)
+}
+
+function removeTodoById(id) {
+  todoList.value.splice(todoList.value.indexOf(todoList.value.find(item => item.id === id)), 1)
+}
 
 
 function show(value) {
@@ -242,7 +265,7 @@ function nowMonth() {
 }
 
 function init() {
-  mainStore.dateList = list
+  // mainStore.dateList = list
   // getTodo(mainStore)
 
   request.post(GetTodoByMonthURL, {
@@ -250,9 +273,12 @@ function init() {
     endTime: list[list.length - 1].date,
   }).then(res => {
     if (res.code === 0) {
-      mainStore.dataList = res.data.list
-      mainStore.data = res.data.list
-      mainStore.update()
+      // mainStore.dataList = res.data.list
+      // mainStore.data = res.data.list
+      // mainStore.update()
+      todoList.value = res.data.list
+      const {renderList} = getRenderEventList(list, todoList.value)
+      renderTodoList.value = renderList
     }
   })
 }

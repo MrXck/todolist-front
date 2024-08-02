@@ -25,12 +25,12 @@
 <script setup>
 import Backend from "@/components/Backend";
 import Forward from "@/components/Forward";
-import {onMounted, ref} from "vue";
+import {inject, onMounted, ref, toRefs} from "vue";
 import {useMainStore} from "@/store";
 import {myDayjs as dayjs} from "@/utils/dayUtils";
 import {useDrag} from "vue3-dnd";
 import request from "@/utils/request";
-import {AddTodoURL, DateFormat, UpdateTodoByIdURL} from "@/utils/Constant";
+import {AddTodoURL, DateFormat, TODO_FUNC_KEY, UpdateTodoByIdURL} from "@/utils/Constant";
 import {getEmptyImage} from "react-dnd-html5-backend";
 import {useMessage} from 'naive-ui'
 import {removeTodo} from "@/utils/apiUtils";
@@ -38,7 +38,7 @@ import {removeTodo} from "@/utils/apiUtils";
 const mainStore = useMainStore()
 const message = useMessage()
 const item = ref(null)
-const {data, fullDate, show} = defineProps({
+const props = defineProps({
   data: {
     required: true
   },
@@ -47,15 +47,15 @@ const {data, fullDate, show} = defineProps({
     required: true
   },
 })
+const {data, fullDate, show} = toRefs(props)
+const todoFunc = inject(TODO_FUNC_KEY)
 
 function showPanel(e) {
   if (mainStore.altDown) {
-    removeTodo(data.id).then(res => {
+    removeTodo(data.value.id).then(res => {
       if (res.code === 0) {
         message.success('操作成功')
-        mainStore.data.splice(mainStore.data.indexOf(mainStore.data.find(item => item.id === data.id)), 1)
-        mainStore.update()
-        mainStore.showPanel = false
+        todoFunc.removeTodoById(data.value.id)
       } else {
         message.error(res.msg)
       }
@@ -64,10 +64,9 @@ function showPanel(e) {
     e.stopPropagation()
     e.preventDefault()
     mainStore.showPanel = true
-    mainStore.selectedId = data.id
-    const item = mainStore.data.find(item => item.id === data.id)
-    Object.assign(mainStore.panel, item)
-    mainStore.panel.dayDiff = dayjs(item.endTime).startOf('day').diff(dayjs(new Date()).startOf('day'), 'day')
+    mainStore.selectedId = data.value.id
+    Object.assign(mainStore.panel, data.value)
+    mainStore.panel.dayDiff = dayjs(data.value.endTime).startOf('day').diff(dayjs(new Date()).startOf('day'), 'day')
     mainStore.calcPosition(e)
   }
 }
@@ -75,15 +74,15 @@ function showPanel(e) {
 const [, drag, preview] = useDrag({
   type: 'move',
   item: () => ({
-    id: data.id,
-    fullDate,
-    data
+    id: data.value.id,
+    fullDate: fullDate.value,
+    data: data.value
   }),
   end: (_item, monitor) => {
     const result = monitor.getDropResult()
-    const item = mainStore.data.find(item => item.id === data.id)
+    const item = mainStore.data.find(item => item.id === data.value.id)
 
-    let fullDateTime = dayjs(fullDate)
+    let fullDateTime = dayjs(fullDate.value)
     let startTime = dayjs(item.startTime)
     let endTime = dayjs(item.endTime)
     let diff = dayjs(result.dropTime).startOf('day').diff(fullDateTime.startOf('day'), 'day')
@@ -114,8 +113,7 @@ const [, drag, preview] = useDrag({
         if (res.code === 0) {
           data.id = res.data
           message.success('操作成功')
-          mainStore.data.push(JSON.parse(JSON.stringify(data)))
-          mainStore.update()
+          todoFunc.addTodo(data)
         } else {
           message.error(res.msg)
         }
