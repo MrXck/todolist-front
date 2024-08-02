@@ -1,9 +1,9 @@
 <script setup>
-import {onMounted, ref} from "vue";
+import {onMounted, ref, toRefs} from "vue";
 import {useDrag} from "@/utils/dragUtils";
 
 const after = ref()
-const {date, data} = defineProps({
+const props = defineProps({
   date: {
     type: String,
     required: true
@@ -13,16 +13,17 @@ const {date, data} = defineProps({
     required: true
   }
 })
+const {date, data} = toRefs(props)
 
 onMounted(() => {
   useDrag({
     type: 'after',
     node: after.value,
-    item: {
-      data
-    },
-    end: (e, item, dropData, type) => {
-      console.log('end', e, item, dropData, type)
+    item: () => ({
+      data: data.value
+    }),
+    end: (e, item, dropData, type, dropEvent) => {
+
     }
   })
 })

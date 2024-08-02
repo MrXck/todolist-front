@@ -1,3 +1,5 @@
+let event = null
+
 export function useDrag(options) {
     const {type, item, end, node, image} = options
     if (!type || !item || !end || !node) {
@@ -6,7 +8,11 @@ export function useDrag(options) {
 
     node.addEventListener('dragstart', e => {
         e.stopPropagation()
-        sessionStorage.setItem('item', JSON.stringify(item))
+        if (item instanceof Function) {
+            sessionStorage.setItem('item', JSON.stringify(item()))
+        } else {
+            sessionStorage.setItem('item', JSON.stringify(item))
+        }
         sessionStorage.setItem('type', JSON.stringify(type))
         const bgImage = new Image()
         bgImage.src = image ? image : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/w8AAwAB/7+gi7YAAAAASUVORK5CYII="
@@ -17,9 +23,17 @@ export function useDrag(options) {
         e.stopPropagation()
         try {
             const dropData = JSON.parse(sessionStorage.getItem('dropData'))
-            end(e, item, dropData, type)
+            if (item instanceof Function) {
+                end(e, item(), dropData, type, event)
+            } else {
+                end(e, item, dropData, type, event)
+            }
         } catch (error) {
-            end(e, item, {}, type)
+            if (item instanceof Function) {
+                end(e, item(), {}, type, event)
+            } else {
+                end(e, item, {}, type, event)
+            }
         }
         sessionStorage.removeItem('item')
         sessionStorage.removeItem('type')
@@ -28,6 +42,7 @@ export function useDrag(options) {
 
     document.addEventListener('dragover', e => {
         e.preventDefault()
+        event = e
     })
 }
 
@@ -47,7 +62,11 @@ export function useDrop(options) {
         const item = JSON.parse(sessionStorage.getItem('item'))
         const type = JSON.parse(sessionStorage.getItem('type'))
         if (accept.indexOf(type) !== -1) {
-            sessionStorage.setItem('dropData', JSON.stringify(dropData))
+            if (dropData instanceof Function) {
+                sessionStorage.setItem('dropData', JSON.stringify(dropData()))
+            } else {
+                sessionStorage.setItem('dropData', JSON.stringify(dropData))
+            }
             drop(e, item, type)
         }
     })
@@ -57,7 +76,11 @@ export function useDrop(options) {
         const item = JSON.parse(sessionStorage.getItem('item'))
         const type = JSON.parse(sessionStorage.getItem('type'))
         if (accept.indexOf(type) !== -1) {
-            sessionStorage.setItem('dropData', JSON.stringify(dropData))
+            if (dropData instanceof Function) {
+                sessionStorage.setItem('dropData', JSON.stringify(dropData()))
+            } else {
+                sessionStorage.setItem('dropData', JSON.stringify(dropData))
+            }
             hover(e, item, type)
         }
     }) : ''

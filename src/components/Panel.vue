@@ -247,7 +247,7 @@ import {
 } from 'naive-ui'
 import {useMainStore} from "@/store";
 import {myDayjs as dayjs} from "@/utils/dayUtils";
-import {computed, customRef} from "vue";
+import {computed, customRef, toRefs} from "vue";
 import {
   DateFormat,
   DateTimeFormat,
@@ -302,7 +302,14 @@ const panelDate = customRef((track, trigger) => {
     },
   }
 })
-
+const emit = defineEmits(['add', 'update', 'remove'])
+const props = defineProps({
+  dataList: {
+    type: Array,
+    required: true
+  }
+})
+const {dataList} = toRefs(props)
 const shortcuts = {
   今天: () => {
     mainStore.panel.startTime = dayjs(new Date()).format(DateFormat)
@@ -326,8 +333,7 @@ function saveTodo() {
       if (res.code === 0) {
         mainStore.panel.id = res.data
         message.success('操作成功')
-        mainStore.data.push(JSON.parse(JSON.stringify(mainStore.panel)))
-        mainStore.update()
+        emit('add', mainStore.panel)
         mainStore.showPanel = false
       } else {
         message.error(res.msg)
@@ -337,7 +343,7 @@ function saveTodo() {
     update(mainStore.panel).then(res => {
       if (res.code === 0) {
         message.success('操作成功')
-        mainStore.updateById(mainStore.panel.id, mainStore.panel)
+        emit('update', mainStore.panel.id, mainStore.panel)
       } else {
         message.error(res.msg)
       }
@@ -349,8 +355,7 @@ function remove() {
   removeTodo(mainStore.panel.id).then(res => {
     if (res.code === 0) {
       message.success('操作成功')
-      mainStore.data.splice(mainStore.data.indexOf(mainStore.data.find(item => item.id === mainStore.selectedId)), 1)
-      mainStore.update()
+      emit('remove', mainStore.panel.id)
       mainStore.showPanel = false
     } else {
       message.error(res.msg)
@@ -362,9 +367,12 @@ function toggle() {
   toggleDone(mainStore.panel).then(res => {
     if (res.code === 0) {
       message.success('操作成功')
-      let item = mainStore.data.find(item => item.id === mainStore.panel.id)
-      item.isDone = !item.isDone
-      mainStore.update()
+
+      const obj = dataList.value.find(item => item.id === mainStore.panel.id)
+      console.log(dataList.value)
+
+      mainStore.panel.isDone = !obj.isDone
+      emit('update', mainStore.panel.id, mainStore.panel)
     } else {
       message.error(res.msg)
     }
@@ -376,9 +384,7 @@ function startTodo() {
     if (res.code === 0) {
       message.success('操作成功')
       mainStore.panel.startDoTime = dayjs(new Date()).format(DateTimeFormat)
-      let item = mainStore.data.find(item => item.id === mainStore.panel.id)
-      item.startDoTime = dayjs(new Date()).format(DateTimeFormat)
-      mainStore.update()
+      emit('update', mainStore.panel.id, mainStore.panel)
     } else {
       message.error(res.msg)
     }
@@ -390,9 +396,7 @@ function endTodo() {
     if (res.code === 0) {
       message.success('操作成功')
       mainStore.panel.endDoTime = dayjs(new Date()).format(DateTimeFormat)
-      let item = mainStore.data.find(item => item.id === mainStore.panel.id)
-      item.endDoTime = dayjs(new Date()).format(DateTimeFormat)
-      mainStore.update()
+      emit('update', mainStore.panel.id, mainStore.panel)
     } else {
       message.error(res.msg)
     }

@@ -1,12 +1,20 @@
 <script setup>
-import {onBeforeUnmount, onMounted, provide, reactive, ref, watch} from "vue";
+import {onBeforeUnmount, onMounted, provide, reactive, ref, watchEffect} from "vue";
 import CalendarDetailItems from "@/components/CalendarDetailItems.vue";
 import {getDaysByNum, myDayjs as dayjs} from "@/utils/dayUtils";
 import {NDatePicker, NSpace, NScrollbar, NCheckbox} from "naive-ui";
-import {DateFormat, DeleteTodoBatchURL, GetTodoByMonthURL, WeekdayFormat} from "@/utils/Constant";
+import {
+  DateFormat,
+  DeleteTodoBatchURL,
+  GetTodoByMonthURL,
+  SHOW_PRIORITY_KEY,
+  TODO_FUNC_KEY,
+  WeekdayFormat
+} from "@/utils/Constant";
 import request from "@/utils/request";
 import {useMainStore} from "@/store";
 import Panel from "@/components/Panel.vue";
+import {getRenderEventList} from "@/utils/todoListSortUtils";
 
 const showNum = ref(7)
 const day = ref(dayjs(new Date()).format(DateFormat))
@@ -22,11 +30,35 @@ const showPriority = ref({
   '4': true,
   '5': true,
 })
-provide('showPriority', showPriority)
+const renderTodoList = ref([])
+const todoList = ref([])
+provide(SHOW_PRIORITY_KEY, showPriority)
+provide(TODO_FUNC_KEY, {
+  updateTodoById,
+  addTodo,
+  removeTodoById,
+})
 
-watch(() => mainStore.dataList, (newVal, oldVal) => {
-  key.value += 1
-}, {deep: true})
+watchEffect(async () => {
+  const {renderList} = getRenderEventList(showDay.map(item => {
+    return {date: item}
+  }), todoList.value)
+  renderTodoList.value = renderList
+})
+
+function updateTodoById(id, todo) {
+  let data = todoList.value.find(item => item.id === id)
+  Object.assign(data, todo)
+  delete data['_index']
+}
+
+function addTodo(todo) {
+  todoList.value.push(todo)
+}
+
+function removeTodoById(id) {
+  todoList.value.splice(todoList.value.indexOf(todoList.value.find(item => item.id === id)), 1)
+}
 
 function keyDownEvent(e) {
   const keyCode = e.keyCode;
@@ -41,6 +73,10 @@ function keyDownEvent(e) {
     mainStore.keyDown = true
   } else if (e.keyCode === 18) {
     mainStore.altDown = true
+  } else if (e.keyCode === 107) {
+    timeHeight.value += 20
+  } else if (e.keyCode === 109) {
+    timeHeight.value -= 20
   }
 
 }
@@ -84,9 +120,11 @@ function updateShowDay() {
     endTime: showDay[showDay.length - 1],
   }).then(res => {
     if (res.code === 0) {
-      mainStore.dataList = res.data.list
-      mainStore.data = res.data.list
-      mainStore.update()
+      const {renderList} = getRenderEventList(showDay.map(item => {
+        return {date: item}
+      }), res.data.list)
+      todoList.value = res.data.list
+      renderTodoList.value = renderList
     }
   }).finally(() => {
     isLoading.value = false
@@ -170,13 +208,13 @@ onBeforeUnmount(() => {
               <n-space justify="end">24:00</n-space>
             </n-space>
           </div>
-          <div v-if="!isLoading" class="calendar-detail-list" v-for="(item, index) in showDay">
-            <CalendarDetailItems :timeHeight="timeHeight" :date="item" :index="index" :dataList="mainStore.dataList[index]" :key="key"/>
+          <div v-if="!isLoading" class="calendar-detail-list" v-for="(item, index) in showDay" :key="index">
+            <CalendarDetailItems :timeHeight="timeHeight" :date="item" :index="index" :dataList="renderTodoList[index]"/>
           </div>
         </div>
       </n-scrollbar>
     </div>
-    <Panel/>
+    <Panel @add="addTodo" @update="updateTodoById" @remove="removeTodoById" :data-list="todoList"/>
   </div>
 </template>
 

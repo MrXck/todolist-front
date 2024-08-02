@@ -1,14 +1,14 @@
 <script setup>
 import {NScrollbar, useMessage} from 'naive-ui'
 import CalendarDetailItem from "@/components/CalendarDetailItem.vue";
-import {onMounted, reactive, ref} from "vue";
+import {inject, onMounted, onUpdated, ref, toRefs} from "vue";
 import {useDrop} from "@/utils/dragUtils";
 import {myDayjs as dayjs} from "@/utils/dayUtils";
 import {useMainStore} from "@/store";
-import {AddTodoURL, DateFormat, TimeFormat, UpdateTodoByIdURL} from "@/utils/Constant";
+import {AddTodoURL, DateFormat, TimeFormat, TODO_FUNC_KEY, UpdateTodoByIdURL} from "@/utils/Constant";
 import request from "@/utils/request";
 
-const {timeHeight, index, date, dataList} = defineProps({
+const props = defineProps({
   timeHeight: {
     type: Number,
     required: true
@@ -26,14 +26,17 @@ const {timeHeight, index, date, dataList} = defineProps({
   }
 })
 
+const {timeHeight, index, date, dataList} = toRefs(props)
+
 let timer = null
 const itemsRef = ref()
-const timeList = reactive([])
+const timeList = ref([])
 const message = useMessage()
 const mainStore = useMainStore()
+const todoFunc = inject(TODO_FUNC_KEY)
 
 function init() {
-  timeList.length = 0
+  timeList.value = []
   for (let i = 0; i < 24; i++) {
     const hour = `${i.toString().padStart(2, '0')}`
     let num = 0
@@ -41,10 +44,10 @@ function init() {
     const endTime = `${hour}:59:59`
     const list = []
 
-    if (dataList && dataList.length > 0) {
-      dataList.map(item => {
-        const dateStart = dayjs(`${date} ${startTime}`)
-        const dateEnd = dayjs(`${date} ${endTime}`)
+    if (dataList.value && dataList.value.length > 0) {
+      dataList.value.map(item => {
+        const dateStart = dayjs(`${date.value} ${startTime}`)
+        const dateEnd = dayjs(`${date.value} ${endTime}`)
         const dataStart = dayjs(`${item.startTime} ${item.planStartTime}`)
         const dataEnd = dayjs(`${item.endTime} ${item.planEndTime}`)
 
@@ -74,7 +77,7 @@ function init() {
       })
     }
 
-    timeList.push({
+    timeList.value.push({
       startTime,
       endTime,
       list
@@ -84,9 +87,9 @@ function init() {
 
 function showPanel(e, hour) {
   mainStore.showPanel = true
-  mainStore.panel.dayDiff = dayjs(date).startOf('day').diff(dayjs().startOf('day'), 'day')
-  mainStore.panel.startTime = dayjs(date).format(DateFormat)
-  mainStore.panel.endTime = dayjs(date).format(DateFormat)
+  mainStore.panel.dayDiff = dayjs(date.value).startOf('day').diff(dayjs().startOf('day'), 'day')
+  mainStore.panel.startTime = dayjs(date.value).format(DateFormat)
+  mainStore.panel.endTime = dayjs(date.value).format(DateFormat)
   mainStore.panel.title = ''
   mainStore.panel.detail = ''
   mainStore.panel.predictTime = "00:00:00"
@@ -120,6 +123,10 @@ function touchend(e) {
   clearTimeout(timer)
 }
 
+let timeee = {
+  timer: null,
+  y: 0
+}
 onMounted(() => {
   init()
 
@@ -133,9 +140,9 @@ onMounted(() => {
         const rect = node.getBoundingClientRect()
         const hour = node.getAttribute('data-hour');
         const minute = Math.ceil((e.clientY - rect.top) / (rect.height) * 60)
-        const newBeforeDateTime = dayjs(`${date} ${hour}:${minute}:00`)
+        const newBeforeDateTime = dayjs(`${date.value} ${hour}:${minute - 2}:00`)
         const oldBeforeDateTime = dayjs(`${data.startTime} ${data.planStartTime ? data.planStartTime : data.predictTime}`)
-        const newAfterDateTime = dayjs(`${date} ${hour}:${minute}:00`)
+        const newAfterDateTime = dayjs(`${date.value} ${hour}:${minute + 2}:00`)
         const oldAfterDateTime = dayjs(`${data.endTime} ${data.planEndTime ? data.planEndTime : data.predictTime}`)
         if (type === 'before') {
           if (newBeforeDateTime.isAfter(oldAfterDateTime)) {
@@ -166,10 +173,8 @@ onMounted(() => {
             if (res.code === 0) {
               data.id = res.data
               message.success('操作成功')
-              mainStore.data.push(JSON.parse(JSON.stringify(data)))
-              mainStore.update()
-              setTimeout(() => {
-                mainStore.updateById(res.data, data)
+              requestAnimationFrame(() => {
+                todoFunc.addTodo(data)
               })
             } else {
               message.error(res.msg)
@@ -179,7 +184,9 @@ onMounted(() => {
           request.post(UpdateTodoByIdURL, data).then(res => {
             if (res.code === 0) {
               message.success('操作成功')
-              mainStore.updateById(id, data)
+              requestAnimationFrame(() => {
+                todoFunc.updateTodoById(id, data)
+              })
             } else {
               message.error(res.msg)
             }
@@ -187,13 +194,60 @@ onMounted(() => {
         }
       },
       hover: (e, item, type) => {
+        if (timeee.y === e.clientY) {
+          return
+        }
 
+        const data = item.data
+        const id = data.id
+        const rect = node.getBoundingClientRect()
+        const hour = node.getAttribute('data-hour');
+        const minute = Math.ceil((e.clientY - rect.top) / (rect.height) * 60)
+        const newBeforeDateTime = dayjs(`${date.value} ${hour}:${minute - 2}:00`)
+        const oldBeforeDateTime = dayjs(`${data.startTime} ${data.planStartTime ? data.planStartTime : data.predictTime}`)
+        const newAfterDateTime = dayjs(`${date.value} ${hour}:${minute + 2}:00`)
+        const oldAfterDateTime = dayjs(`${data.endTime} ${data.planEndTime ? data.planEndTime : data.predictTime}`)
+
+        clearTimeout(timeee.timer)
+
+        timeee.timer = setTimeout(() => {
+
+          if (type === 'before') {
+            if (newBeforeDateTime.isAfter(oldAfterDateTime)) {
+              return
+            } else {
+              data.planStartTime = newBeforeDateTime.format(TimeFormat)
+              data.startTime = newBeforeDateTime.format(DateFormat)
+            }
+          } else if (type === 'after') {
+            if (newAfterDateTime.isBefore(oldBeforeDateTime)) {
+              return
+            } else {
+              data.planEndTime = newAfterDateTime.format(TimeFormat)
+              data.endTime = newAfterDateTime.format(DateFormat)
+            }
+          } else if (type === 'move') {
+            const second = oldAfterDateTime.diff(oldBeforeDateTime, 'second')
+            data.planStartTime = newBeforeDateTime.format(TimeFormat)
+            data.startTime = newBeforeDateTime.format(DateFormat)
+            const afterDateTime = newBeforeDateTime.add(second, 'second')
+            data.endTime = afterDateTime.format(DateFormat)
+            data.planEndTime = afterDateTime.format(TimeFormat)
+          }
+          todoFunc.updateTodoById(id, data)
+        }, 10)
       },
-      dropData: {
-        date
-      }
+      dropData: () => ({
+        date: date.value,
+        info: node.getBoundingClientRect(),
+        hour: node.getAttribute('data-hour')
+      })
     })
   })
+})
+
+onUpdated(() => {
+  init()
 })
 </script>
 
@@ -214,7 +268,7 @@ onMounted(() => {
         <CalendarDetailItem v-if="timeList[index]?.list" v-for="item in timeList[index].list" :date="date"
                             :startTime="timeList[index].startTime"
                             :endTime="timeList[index].endTime" :data="item.data" :num="item.num"
-                            :timeHeight="timeHeight"/>
+                            :timeHeight="timeHeight" :key="item.id"/>
       </n-scrollbar>
     </div>
   </div>

@@ -1,5 +1,5 @@
 <script setup>
-import {computed, inject, onMounted, ref} from "vue";
+import {computed, inject, onMounted, ref, toRefs} from "vue";
 import {useDrag} from "@/utils/dragUtils";
 import CalendarDetailBefore from "@/components/CalendarDetailBefore.vue";
 import CalendarDetailAfter from "@/components/CalendarDetailAfter.vue";
@@ -7,8 +7,9 @@ import {myDayjs as dayjs} from "@/utils/dayUtils";
 import {removeTodo} from "@/utils/apiUtils";
 import {useMainStore} from "@/store";
 import {useMessage} from 'naive-ui'
+import {SHOW_PRIORITY_KEY, TODO_FUNC_KEY} from "@/utils/Constant";
 
-const {date, startTime, endTime, data, num, timeHeight} = defineProps({
+const props = defineProps({
   date: {
     type: String,
     required: true,
@@ -34,32 +35,34 @@ const {date, startTime, endTime, data, num, timeHeight} = defineProps({
     required: true
   },
 })
-
+const {date, startTime, endTime, data, num, timeHeight} = toRefs(props)
 const message = useMessage()
 const mainStore = useMainStore()
-const isStart = ref(dayjs(`${data.startTime} ${data.planStartTime}`).isBetween(dayjs(`${date} ${startTime}`), dayjs(`${date} ${endTime}`), null, []))
-const isEnd = ref(dayjs(`${data.endTime} ${data.planEndTime}`).isBetween(dayjs(`${date} ${startTime}`), dayjs(`${date} ${endTime}`), null, []))
 const itemRef = ref()
+
+const isStart = computed(() => dayjs(`${data.value.startTime} ${data.value.planStartTime}`).isBetween(dayjs(`${date.value} ${startTime.value}`), dayjs(`${date.value} ${endTime.value}`), null, []))
+const isEnd = computed(() => dayjs(`${data.value.endTime} ${data.value.planEndTime}`).isBetween(dayjs(`${date.value} ${startTime.value}`), dayjs(`${date.value} ${endTime.value}`), null, []))
+
 const transformTop = computed(() => {
-  const minute = dayjs(`${data.startTime} ${data.planStartTime}`).minute()
-  return isStart.value ? Math.floor(minute / 60 * (timeHeight - 1)) : 0
+  const minute = dayjs(`${data.value.startTime} ${data.value.planStartTime}`).minute()
+  return isStart.value ? Math.floor(minute / 60 * (timeHeight.value - 1)) : 0
 })
 const transformBottom = computed(() => {
-  const minute = dayjs(`${data.endTime} ${data.planEndTime}`).minute()
-  return Math.max(isEnd.value ? Math.floor(minute / 60 * (timeHeight - 1)) : timeHeight - 1 - transformTop.value, 0)
+  const minute = dayjs(`${data.value.endTime} ${data.value.planEndTime}`).minute()
+  return Math.max(isEnd.value ? Math.floor(minute / 60 * (timeHeight.value - 1)) : timeHeight.value - 1 - transformTop.value, 0)
 })
 const showLines = computed(() => {
   return Math.floor((transformBottom.value - 16) / 16)
 })
-const showPriority = inject('showPriority')
+const showPriority = inject(SHOW_PRIORITY_KEY)
+const todoFunc = inject(TODO_FUNC_KEY)
 
 function showPanel(e) {
   if (mainStore.altDown) {
-    removeTodo(data.id).then(res => {
+    removeTodo(data.value.id).then(res => {
       if (res.code === 0) {
         message.success('操作成功')
-        mainStore.data.splice(mainStore.data.indexOf(mainStore.data.find(item => item.id === data.id)), 1)
-        mainStore.update()
+        todoFunc.removeTodoById(data.value.id)
         mainStore.showPanel = false
       } else {
         message.error(res.msg)
@@ -69,10 +72,9 @@ function showPanel(e) {
     e.stopPropagation()
     e.preventDefault()
     mainStore.showPanel = true
-    mainStore.selectedId = data.id
-    const item = mainStore.data.find(item => item.id === data.id)
-    Object.assign(mainStore.panel, item)
-    mainStore.panel.dayDiff = dayjs(item.endTime).startOf('day').diff(dayjs(new Date()).startOf('day'), 'day')
+    mainStore.selectedId = data.value.id
+    Object.assign(mainStore.panel, data.value)
+    mainStore.panel.dayDiff = dayjs(data.value.endTime).startOf('day').diff(dayjs(new Date()).startOf('day'), 'day')
     mainStore.calcPosition(e)
   }
 }
@@ -81,15 +83,14 @@ onMounted(() => {
   useDrag({
     type: 'move',
     node: itemRef.value,
-    item: {
-      data
-    },
+    item: () => ({
+      data: data.value
+    }),
     end: (e, item, dropData) => {
       console.log('item', e, item, dropData)
     }
   })
 })
-
 </script>
 
 <template>
