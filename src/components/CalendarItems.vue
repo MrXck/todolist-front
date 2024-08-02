@@ -45,8 +45,8 @@ import {useDrop} from "vue3-dnd";
 import {myDayjs as dayjs} from "@/utils/dayUtils";
 import {useMainStore} from "@/store";
 import {NScrollbar, NSpace} from 'naive-ui'
-import {DateFormat} from "@/utils/Constant";
-import {onBeforeUnmount, onMounted, ref, toRefs} from "vue";
+import {DateFormat, TODO_FUNC_KEY} from "@/utils/Constant";
+import {inject, onBeforeUnmount, onMounted, ref, toRefs} from "vue";
 
 const mainStore = useMainStore()
 const now = `${new Date().getFullYear()}-${(new Date().getMonth() + 1).toString().padStart(2, '0')}-${(new Date().getDate()).toString().padStart(2, '0')}`
@@ -69,6 +69,7 @@ const {index, item: date, dataList} = toRefs(props)
 
 let timer = null
 const showDetail = ref(null)
+const todoFunc = inject(TODO_FUNC_KEY)
 
 const [, drop] = useDrop({
   accept: [
@@ -82,8 +83,21 @@ const [, drop] = useDrop({
   }),
   // 当拖拽组件经过组件上时调用该方法。
   hover: (item, monitor) => {
-    const dragItem = monitor.getItem()
-    // console.log(date, dragItem)
+    const itemType = monitor.getItemType();
+    if (itemType === 'forward') {
+      if (item.data.endTime === date.value.date) {
+        return
+      }
+      item.data.endTime = date.value.date
+      todoFunc.updateTodoById(item.data.id, item.data)
+    } else if (itemType === 'backend') {
+      if (item.data.startTime === date.value.date) {
+        return
+      }
+      item.data.startTime = date.value.date
+      todoFunc.updateTodoById(item.data.id, item.data)
+    }
+
   }
 })
 

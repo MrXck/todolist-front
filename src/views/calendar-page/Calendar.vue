@@ -2,7 +2,7 @@
   <div id="calendar" style="position: relative">
     <n-space justify="end">
       <n-space>
-        <n-date-picker v-model:value="date" type="month" @update:value="show"/>
+        <n-date-picker v-model:formatted-value="date" format="yyyy-MM" type="month" @update:value="show"/>
       </n-space>
       <n-space>
         <n-button @click="showAddModal = true">批量新增</n-button>
@@ -169,7 +169,7 @@ import {
   NInputNumber,
   NTimePicker, NSwitch
 } from 'naive-ui'
-import {onBeforeUnmount, onMounted, provide, reactive, ref, watch, watchEffect} from "vue"
+import {onBeforeUnmount, onMounted, provide, reactive, ref, watchEffect} from "vue"
 import {getNextMonthDays, myDayjs as dayjs} from "@/utils/dayUtils";
 import {ArrowForwardOutline, ArrowBackOutline, Close} from "@vicons/ionicons5";
 import CalendarItems from "@/components/CalendarItems";
@@ -181,13 +181,13 @@ import {
   GetTodoByMonthURL,
   GenerateOptions,
   GenerateTypeDay,
-  BatchGenerateTodoURL, options, NoticeTypeOptions, DeleteTodoBatchURL, TODO_FUNC_KEY
+  BatchGenerateTodoURL, options, NoticeTypeOptions, DeleteTodoBatchURL, TODO_FUNC_KEY, DateMonthFormat
 } from "@/utils/Constant";
 import request from "@/utils/request";
 import {getRenderEventList} from "@/utils/todoListSortUtils";
 
 
-const date = ref(new Date())
+const date = ref(dayjs(new Date()).format(DateMonthFormat))
 const calendar = ref(null)
 const showAddModal = ref(false)
 const mainStore = useMainStore()
@@ -245,17 +245,18 @@ function show(value) {
 function initList() {
   list.length = 0
   key.value += 1
-  list.push(...getNextMonthDays(date.value.getFullYear(), date.value.getMonth() + 1))
+  const month = dayjs(date.value)
+  list.push(...getNextMonthDays(month.year(), month.month() + 1))
   init()
 }
 
 function backMonth() {
-  date.value = new Date(dayjs(date.value).subtract(1, 'month').format(DateFormat))
+  date.value = dayjs(date.value).subtract(1, 'month').format(DateMonthFormat)
   initList()
 }
 
 function forwardMonth() {
-  date.value = new Date(dayjs(date.value).add(1, 'month').format(DateFormat))
+  date.value = dayjs(date.value).add(1, 'month').format(DateMonthFormat)
   initList()
 }
 
@@ -265,17 +266,11 @@ function nowMonth() {
 }
 
 function init() {
-  // mainStore.dateList = list
-  // getTodo(mainStore)
-
   request.post(GetTodoByMonthURL, {
     startTime: list[0].date,
     endTime: list[list.length - 1].date,
   }).then(res => {
     if (res.code === 0) {
-      // mainStore.dataList = res.data.list
-      // mainStore.data = res.data.list
-      // mainStore.update()
       todoList.value = res.data.list
       const {renderList} = getRenderEventList(list, todoList.value)
       renderTodoList.value = renderList
