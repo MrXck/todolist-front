@@ -227,6 +227,9 @@ onMounted(() => {
               data.endTime = newAfterDateTime.format(DateFormat)
             }
           } else if (type === 'move') {
+            if (mainStore.keyDown) {
+              return
+            }
             const second = oldAfterDateTime.diff(oldBeforeDateTime, 'second')
             data.planStartTime = newBeforeDateTime.format(TimeFormat)
             data.startTime = newBeforeDateTime.format(DateFormat)

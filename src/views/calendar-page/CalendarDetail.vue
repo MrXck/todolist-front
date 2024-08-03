@@ -18,11 +18,11 @@ import {getRenderEventList} from "@/utils/todoListSortUtils";
 
 const showNum = ref(7)
 const day = ref(dayjs(new Date()).format(DateFormat))
+const today = ref(dayjs(new Date()).format(DateFormat))
 const showDay = reactive([])
 const timeHeight = ref(100)
 const mainStore = useMainStore()
 const isLoading = ref(true)
-const key = ref(0)
 const showPriority = ref({
   '1': true,
   '2': true,
@@ -53,6 +53,7 @@ function updateTodoById(id, todo) {
 }
 
 function addTodo(todo) {
+  delete todo['_index']
   todoList.value.push(todo)
 }
 
@@ -172,7 +173,7 @@ onBeforeUnmount(() => {
         <n-space justify="center" v-for="item in showDay">
           <n-space justify="center">
             {{ `${dayjs(item).format(WeekdayFormat)}` }}<span :class="[
-                item === day ? 'now' : ''
+                item === today ? 'now' : ''
             ]">{{item.split('-')[2]}}</span>
           </n-space>
         </n-space>

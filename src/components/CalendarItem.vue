@@ -80,7 +80,7 @@ const [, drag, preview] = useDrag({
   }),
   end: (_item, monitor) => {
     const result = monitor.getDropResult()
-    const item = mainStore.data.find(item => item.id === data.value.id)
+    const item = data.value
 
     let fullDateTime = dayjs(fullDate.value)
     let startTime = dayjs(item.startTime)
@@ -98,7 +98,7 @@ const [, drag, preview] = useDrag({
       request.post(UpdateTodoByIdURL, item).then(res => {
         if (res.code === 0) {
           message.success('操作成功')
-          mainStore.updateById(item.id, item)
+          todoFunc.updateTodoById(item.id, item)
         } else {
           item.endTime = endTime.format(DateFormat)
           item.startTime = startTime.format(DateFormat)

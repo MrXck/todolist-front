@@ -32,7 +32,7 @@
     </div>
     <div class="calendar-item-content">
       <n-scrollbar trigger="hover">
-        <CalendarItem v-if="dataList !== undefined" :full-date="item.date" :data="data" v-for="(data, index) in dataList" :key="data.id"/>
+        <CalendarItem v-if="dataList !== undefined" :full-date="item.date" :data="data" v-for="(data, index) in dataList" :key="index"/>
       </n-scrollbar>
     </div>
   </div>
@@ -96,6 +96,18 @@ const [, drop] = useDrop({
       }
       item.data.startTime = date.value.date
       todoFunc.updateTodoById(item.data.id, item.data)
+    } else if (itemType === 'move') {
+      let startTime = dayjs(item.data.startTime)
+      let endTime = dayjs(item.data.endTime)
+      let diff = dayjs(date.value.date).startOf('day').diff(dayjs(item.fullDate).startOf('day'), 'day')
+      // console.log(diff)
+      if (diff === 0) {
+        return
+      }
+      // item.data.startTime = startTime.add(diff, 'day').format(DateFormat)
+      // item.data.endTime = endTime.add(diff, 'day').format(DateFormat)
+      // const data = Object.assign({}, item.data)
+      // todoFunc.updateTodoById(data.id, data)
     }
 
   }

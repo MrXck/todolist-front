@@ -229,6 +229,7 @@ function updateTodoById(id, todo) {
 }
 
 function addTodo(todo) {
+  delete todo['_index']
   todoList.value.push(todo)
 }
 
