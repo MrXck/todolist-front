@@ -97,6 +97,9 @@ const [, drop] = useDrop({
       item.data.startTime = date.value.date
       todoFunc.updateTodoById(item.data.id, item.data)
     } else if (itemType === 'move') {
+      if (mainStore.keyDown) {
+        return
+      }
       const data = Object.assign({}, item.data)
       let startTime = dayjs(item.data.startTime)
       let endTime = dayjs(item.data.endTime)
