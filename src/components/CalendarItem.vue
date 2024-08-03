@@ -65,7 +65,7 @@ function showPanel(e) {
     e.preventDefault()
     mainStore.showPanel = true
     mainStore.selectedId = data.value.id
-    Object.assign(mainStore.panel, data.value)
+    mainStore.panel = JSON.parse(JSON.stringify(data.value))
     mainStore.panel.dayDiff = dayjs(data.value.endTime).startOf('day').diff(dayjs(new Date()).startOf('day'), 'day')
     mainStore.calcPosition(e)
   }

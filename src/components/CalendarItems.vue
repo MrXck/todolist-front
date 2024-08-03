@@ -89,13 +89,17 @@ const [, drop] = useDrop({
         return
       }
       item.data.endTime = date.value.date
-      todoFunc.updateTodoById(item.data.id, item.data)
+      requestAnimationFrame(() => {
+        todoFunc.updateTodoById(item.data.id, item.data)
+      })
     } else if (itemType === 'backend') {
       if (item.data.startTime === date.value.date) {
         return
       }
       item.data.startTime = date.value.date
-      todoFunc.updateTodoById(item.data.id, item.data)
+      requestAnimationFrame(() => {
+        todoFunc.updateTodoById(item.data.id, item.data)
+      })
     } else if (itemType === 'move') {
       if (mainStore.keyDown) {
         return
@@ -106,7 +110,9 @@ const [, drop] = useDrop({
       let diff = dayjs(date.value.date).startOf('day').diff(dayjs(item.fullDate).startOf('day'), 'day')
       data.startTime = startTime.add(diff, 'day').format(DateFormat)
       data.endTime = endTime.add(diff, 'day').format(DateFormat)
-      todoFunc.updateTodoById(data.id, data)
+      requestAnimationFrame(() => {
+        todoFunc.updateTodoById(data.id, data)
+      })
     }
 
   }

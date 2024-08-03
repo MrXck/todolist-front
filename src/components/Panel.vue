@@ -333,7 +333,7 @@ function saveTodo() {
       if (res.code === 0) {
         mainStore.panel.id = res.data
         message.success('操作成功')
-        emit('add', mainStore.panel)
+        emit('add', JSON.parse(JSON.stringify(mainStore.panel)))
         mainStore.showPanel = false
       } else {
         message.error(res.msg)
@@ -343,7 +343,7 @@ function saveTodo() {
     update(mainStore.panel).then(res => {
       if (res.code === 0) {
         message.success('操作成功')
-        emit('update', mainStore.panel.id, mainStore.panel)
+        emit('update', mainStore.panel.id, JSON.parse(JSON.stringify(mainStore.panel)))
       } else {
         message.error(res.msg)
       }
