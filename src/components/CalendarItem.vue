@@ -80,7 +80,7 @@ const [, drag, preview] = useDrag({
   }),
   end: (_item, monitor) => {
     const result = monitor.getDropResult()
-    const item = data.value
+    const item = _item.data
 
     let fullDateTime = dayjs(fullDate.value)
     let startTime = dayjs(item.startTime)
@@ -123,6 +123,7 @@ const [, drag, preview] = useDrag({
 })
 
 onMounted(() => {
+  console.log(data.value)
   const emptyImage = getEmptyImage()
   preview(emptyImage, {captureDraggingState: true})
 })
