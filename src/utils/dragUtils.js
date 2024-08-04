@@ -1,48 +1,55 @@
-let event = null
+const dragData = {}
+
+let nowNode = null
+
+function generateString(length = 16) {
+    return Array.from({length}, () => {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+        const randomIndex = Math.floor(Math.random() * characters.length)
+        return characters[randomIndex]
+    }).join('')
+}
 
 export function useDrag(options) {
     const {type, item, end, node, image} = options
     if (!type || !item || !end || !node) {
         throw new Error("type item end node are required")
     }
+    const randomString = generateString()
+
+    node.setAttribute('data-drag', randomString)
+
+    dragData[randomString] = {type, item, dropData: null, event: null}
 
     node.addEventListener('dragstart', e => {
         e.stopPropagation()
-        if (item instanceof Function) {
-            sessionStorage.setItem('item', JSON.stringify(item()))
-        } else {
-            sessionStorage.setItem('item', JSON.stringify(item))
-        }
-        sessionStorage.setItem('type', JSON.stringify(type))
         const bgImage = new Image()
         bgImage.src = image ? image : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/w8AAwAB/7+gi7YAAAAASUVORK5CYII="
         e.dataTransfer.setDragImage(bgImage, 0, 0)
+        nowNode = node
     })
 
     node.addEventListener('dragend', e => {
         e.stopPropagation()
         try {
-            const dropData = JSON.parse(sessionStorage.getItem('dropData'))
+            const dropData = dragData[randomString].dropData
             if (item instanceof Function) {
-                end(e, item(), dropData, type, event)
+                end(e, item(), dropData, type, dragData[randomString].event)
             } else {
-                end(e, item, dropData, type, event)
+                end(e, item, dropData, type, dragData[randomString].event)
             }
         } catch (error) {
             if (item instanceof Function) {
-                end(e, item(), {}, type, event)
+                end(e, item(), {}, type, dragData[randomString].event)
             } else {
-                end(e, item, {}, type, event)
+                end(e, item, {}, type, dragData[randomString].event)
             }
         }
-        sessionStorage.removeItem('item')
-        sessionStorage.removeItem('type')
-        sessionStorage.removeItem('dropData')
+        nowNode = null
     })
 
     document.addEventListener('dragover', e => {
         e.preventDefault()
-        event = e
     })
 }
 
@@ -59,29 +66,41 @@ export function useDrop(options) {
 
     node.addEventListener('drop', e => {
         e.stopPropagation()
-        const item = JSON.parse(sessionStorage.getItem('item'))
-        const type = JSON.parse(sessionStorage.getItem('type'))
+        const dataDrag = nowNode.getAttribute('data-drag')
+        const item = dragData[dataDrag].item
+        const type = dragData[dataDrag].type
         if (accept.indexOf(type) !== -1) {
             if (dropData instanceof Function) {
-                sessionStorage.setItem('dropData', JSON.stringify(dropData()))
+                dragData[dataDrag].dropData = dropData()
             } else {
-                sessionStorage.setItem('dropData', JSON.stringify(dropData))
+                dragData[dataDrag].dropData = dropData
             }
-            drop(e, item, type)
+            if (item instanceof Function) {
+                drop(e, item(), type)
+            } else {
+                drop(e, item, type)
+            }
         }
     })
 
     hover ? node.addEventListener('dragover', e => {
         e.preventDefault()
-        const item = JSON.parse(sessionStorage.getItem('item'))
-        const type = JSON.parse(sessionStorage.getItem('type'))
+        const dataDrag = nowNode.getAttribute('data-drag')
+        const item = dragData[dataDrag].item
+        const type = dragData[dataDrag].type
         if (accept.indexOf(type) !== -1) {
             if (dropData instanceof Function) {
-                sessionStorage.setItem('dropData', JSON.stringify(dropData()))
+                dragData[dataDrag].dropData = dropData()
             } else {
-                sessionStorage.setItem('dropData', JSON.stringify(dropData))
+                dragData[dataDrag].dropData = dropData
             }
-            hover(e, item, type)
+            dragData[dataDrag].event = e
+
+            if (item instanceof Function) {
+                hover(e, item(), type)
+            } else {
+                hover(e, item, type)
+            }
         }
     }) : ''
 }
