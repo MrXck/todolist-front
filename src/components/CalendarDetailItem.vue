@@ -49,7 +49,7 @@ const transformTop = computed(() => {
 })
 const transformBottom = computed(() => {
   const minute = dayjs(`${data.value.endTime} ${data.value.planEndTime}`).minute()
-  return Math.max(isEnd.value ? Math.floor(minute / 60 * (timeHeight.value - 1)) : timeHeight.value - 1 - transformTop.value, 0)
+  return Math.max(isEnd.value ? Math.floor(minute / 60 * (timeHeight.value - 1) - transformTop.value) : timeHeight.value - 1 - transformTop.value, 0)
 })
 const showLines = computed(() => {
   return Math.floor((transformBottom.value - 16) / 16)
