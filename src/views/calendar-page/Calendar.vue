@@ -262,7 +262,7 @@ function forwardMonth() {
 }
 
 function nowMonth() {
-  date.value = new Date()
+  date.value = dayjs(new Date()).format(DateMonthFormat)
   initList()
 }
 
