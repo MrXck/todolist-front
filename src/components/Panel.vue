@@ -369,7 +369,6 @@ function toggle() {
       message.success('操作成功')
 
       const obj = dataList.value.find(item => item.id === mainStore.panel.id)
-      console.log(dataList.value)
 
       mainStore.panel.isDone = !obj.isDone
       emit('update', mainStore.panel.id, mainStore.panel)

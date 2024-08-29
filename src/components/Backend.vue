@@ -41,7 +41,6 @@ const [, drag, preview] = useDrag({
       request.post(UpdateTodoByIdURL, item).then(res => {
         if (res.code === 0) {
           message.success('操作成功')
-          console.log(todoFunc)
           todoFunc.updateTodoById(item.id, item)
         } else {
           item.startTime = startTime

@@ -87,7 +87,7 @@ onMounted(() => {
       data: data.value
     }),
     end: (e, item, dropData) => {
-      console.log('item', e, item, dropData)
+      // console.log('item', e, item, dropData)
     }
   })
 })

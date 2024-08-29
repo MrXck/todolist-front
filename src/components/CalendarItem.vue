@@ -123,7 +123,6 @@ const [, drag, preview] = useDrag({
 })
 
 onMounted(() => {
-  console.log(data.value)
   const emptyImage = getEmptyImage()
   preview(emptyImage, {captureDraggingState: true})
 })
