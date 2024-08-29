@@ -31,8 +31,8 @@ function initOperationList(startDate, endDate) {
       for (let i = 0; i < dataList.length; i++) {
         const data = dataList[i]
         const date = dayjs(data.createTime.split('T')[0]).format('YYYY-MM-DD')
-        operationList.value[date] += 1
-        count.value += 1
+        operationList.value[date] = data.num
+        count.value += data.num
       }
     }
   })
