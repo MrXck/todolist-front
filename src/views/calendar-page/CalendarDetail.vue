@@ -1,5 +1,5 @@
 <script setup>
-import {onBeforeUnmount, onMounted, provide, reactive, ref, watchEffect} from "vue";
+import {computed, onBeforeUnmount, onMounted, provide, reactive, ref, watchEffect} from "vue";
 import CalendarDetailItems from "@/components/CalendarDetailItems.vue";
 import {getDaysByNum, myDayjs as dayjs} from "@/utils/dayUtils";
 import {NDatePicker, NSpace, NScrollbar, NCheckbox} from "naive-ui";
@@ -7,7 +7,7 @@ import {
   DateFormat,
   DeleteTodoBatchURL,
   GetTodoByMonthURL,
-  SHOW_PRIORITY_KEY,
+  SHOW_PRIORITY_KEY, TimeFormat,
   TODO_FUNC_KEY,
   WeekdayFormat
 } from "@/utils/Constant";
@@ -32,6 +32,19 @@ const showPriority = ref({
 })
 const renderTodoList = ref([])
 const todoList = ref([])
+const time = ref(dayjs(new Date()).format(TimeFormat))
+const timeLineStyle = computed(() => {
+  const [hour, minute, second] = time.value.split(':')
+  return {
+    width: '100%',
+    height: '2px',
+    position: 'absolute',
+    backgroundColor: '#a8a8a8',
+    zIndex: '100',
+    top: `${(parseInt(hour) + (parseInt(minute) + parseInt(second) / 60) / 60) * timeHeight.value}px`,
+  }
+})
+let updateTimeInterval = null
 provide(SHOW_PRIORITY_KEY, showPriority)
 provide(TODO_FUNC_KEY, {
   updateTodoById,
@@ -100,8 +113,16 @@ function keyUpEvent(e) {
   }
 }
 
+function updateTime() {
+  clearInterval(updateTimeInterval)
+  updateTimeInterval = setInterval(() => {
+    time.value = dayjs(new Date()).format(TimeFormat)
+  }, 1000)
+}
+
 function init() {
   updateShowDay()
+  updateTime()
 }
 
 function updateDay(val) {
@@ -145,6 +166,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  clearInterval(updateTimeInterval)
   window.removeEventListener('keyup', keyUpEvent)
   window.removeEventListener('keydown', keyDownEvent)
   document.getElementById('calendar').removeEventListener('click', click)
@@ -155,7 +177,7 @@ onBeforeUnmount(() => {
   <n-space justify="space-between">
     <n-space justify="start">
       <div style="font-size: 30px">
-        {{`${day.split('-')[0]}年${day.split('-')[1]}月`}}
+        {{ `${day.split('-')[0]}年${day.split('-')[1]}月` }}
       </div>
     </n-space>
     <n-space justify="end" align="center">
@@ -174,7 +196,7 @@ onBeforeUnmount(() => {
           <n-space justify="center">
             {{ `${dayjs(item).format(WeekdayFormat)}` }}<span :class="[
                 item === today ? 'now' : ''
-            ]">{{item.split('-')[2]}}</span>
+            ]">{{ item.split('-')[2] }}</span>
           </n-space>
         </n-space>
       </n-space>
@@ -209,8 +231,10 @@ onBeforeUnmount(() => {
               <n-space justify="end">24:00</n-space>
             </n-space>
           </div>
+          <div :style="timeLineStyle">{{ time }}</div>
           <div v-if="!isLoading" class="calendar-detail-list" v-for="(item, index) in showDay" :key="index">
-            <CalendarDetailItems :timeHeight="timeHeight" :date="item" :index="index" :dataList="renderTodoList[index]"/>
+            <CalendarDetailItems :timeHeight="timeHeight" :date="item" :index="index"
+                                 :dataList="renderTodoList[index]"/>
           </div>
         </div>
       </n-scrollbar>
@@ -243,6 +267,7 @@ onBeforeUnmount(() => {
 .content {
   display: flex;
   margin-top: 10px;
+  position: relative;
 }
 
 .now {
