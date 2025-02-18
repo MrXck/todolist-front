@@ -27,15 +27,25 @@ self.addEventListener('fetch', (event) => {
                 // 如果缓存存在，立即返回缓存内容
                 console.log(`[Service Worker] Serving from cache: ${event.request.url}`);
 
+                const clone = cachedResponse.clone()
+
                 // 后台发起网络请求以更新缓存
                 event.waitUntil(
-                    fetch(event.request).then((networkResponse) => {
-                        if (networkResponse && networkResponse.status === 200) {
-                            return caches.open(CACHE_NAME).then((cache) => {
-                                // 缓存最新内容，下次使用
-                                cache.put(event.request, networkResponse.clone());
-                                console.log(`[Service Worker] Fetched and cached (background): ${event.request.url}`);
-                            });
+                    fetch(event.request).then(async (networkResponse) => {
+                        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+                            if (await clone.text() !== await networkResponse.clone().text()) {
+                                console.log(`[Service Worker] 需要更新`);
+                                return caches.open(CACHE_NAME).then((cache) => {
+                                    // 缓存最新内容，下次使用
+                                    cache.put(event.request, networkResponse.clone());
+                                    console.log(`[Service Worker] Fetched and cached (background): ${event.request.url}`);
+                                    return sendMessage({
+                                        action: 'update',
+                                        url: event.request.url,
+                                    });
+                                });
+                            }
+
                         }
                     }).catch((error) => {
                         console.error(`[Service Worker] Background fetch failed for: ${event.request.url}`, error);
@@ -70,3 +80,12 @@ self.addEventListener('activate', (event) => {
         }).then(() => self.clients.claim()) // 确保 SW 控制所有客户端
     );
 });
+
+// 辅助函数：发送消息给客户端
+function sendMessage(data) {
+    return self.clients.matchAll().then((clients) => {
+        clients.forEach((client) => {
+            client.postMessage(data);
+        });
+    });
+}
