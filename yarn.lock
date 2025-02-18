@@ -2734,9 +2734,9 @@ character-entities@^2.0.0:
   integrity sha512-shx7oQ0Awen/BRIdkjkvz54PnEEI/EjwXDSIZp86/KKdbafHh1Df/RYGBhn4hbe2+uKC9FnT5UCEdyPz3ai9hQ==
 
 chinese-workday@^1.10.0:
-  version "1.10.0"
-  resolved "https://registry.npmmirror.com/chinese-workday/-/chinese-workday-1.10.0.tgz#a20d0c75681a3e856d2fd81ca0904386614c6fb0"
-  integrity sha512-wHar+6Qd/lPDHYHdnCrb1ZJvj8Kjyy3lPrjQEqtlWqw9TRlRLTWnPUi/esB5OJFbEedYGJEP5o5zrrp4wLBCVA==
+  version "1.10.1"
+  resolved "https://registry.npmmirror.com/chinese-workday/-/chinese-workday-1.10.1.tgz#19c06dc511a3186677b31e32aa7491ace56e534e"
+  integrity sha512-bSWPZuDjxr1h5NmmoJsXIvf7BwOnE5BR7+uxi7f+vMiMPPlGZpSErMheYwnLGwOZO5CIhiGvIrnYzNhXG0OBxQ==
 
 chokidar@^3.5.3:
   version "3.5.3"
