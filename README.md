@@ -1,7 +1,7 @@
 # todolist
 
 ## 介绍
-预览链接 http://110.42.211.207/todo
+预览链接 https://yuumi.cc/todo
 
 ## 安装依赖
 ```
