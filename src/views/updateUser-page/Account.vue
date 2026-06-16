@@ -95,10 +95,10 @@
     </n-space>
     <n-space>
       <n-space item-style="width: 100px">
-        开启ios提醒
+        开启android提醒
       </n-space>
       <n-space>
-        <n-switch v-model:value="user.enableIos"></n-switch>
+        <n-switch v-model:value="user.enableAndroid"></n-switch>
       </n-space>
     </n-space>
     <n-space>
