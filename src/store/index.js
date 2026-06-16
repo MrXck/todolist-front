@@ -26,6 +26,8 @@ export const useMainStore = defineStore('main', {
                 endDoTime: null,
                 predictTime: "00:00:00",
                 enableEmail: false,
+                enableIos: false,
+                enableAndroid: false,
                 noticeType: 1,
                 cronNum: null,
                 planStartTime: null,

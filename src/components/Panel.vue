@@ -45,38 +45,57 @@
         <n-space align="center" style="margin-bottom: 4px">
           <n-space align="center" justify="center">
             持续时间
-            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.planStartTime" placeholder="开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
-            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.planEndTime" placeholder="结束时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
+            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.planStartTime"
+                           placeholder="开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
+            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.planEndTime"
+                           placeholder="结束时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
           </n-space>
         </n-space>
         <n-space align="center" style="margin-bottom: 4px">
           <n-space align="center" justify="center">
-            邮件提醒(持续时间即为提醒时间)
+            邮件提醒
             <n-switch v-model:value="mainStore.panel.enableEmail"/>
           </n-space>
+          <n-space align="center" justify="center">
+            IOS提醒
+            <n-switch v-model:value="mainStore.panel.enableIos"/>
+          </n-space>
+          <n-space align="center" justify="center">
+            安卓提醒
+            <n-switch v-model:value="mainStore.panel.enableAndroid"/>
+          </n-space>
         </n-space>
-        <n-space v-if="mainStore.panel.enableEmail" align="center">
+        <n-space v-if="mainStore.panel.enableEmail || mainStore.panel.enableIos || mainStore.panel.enableAndroid"
+                 align="center">
           <n-space align="center">
             提醒类型
-            <n-select size="small" :options="NoticeTypeOptions" v-model:value="mainStore.panel.noticeType" style="width: 100px"></n-select>
-            <n-select v-show="NoticeTypeOptions.find(item => item.value === mainStore.panel.noticeType).child.length !== 0" size="small" :options="NoticeTypeOptions.find(item => item.value === mainStore.panel.noticeType).child" v-model:value="mainStore.panel.cronNum" style="width: 100px"></n-select>
+            <n-select size="small" :options="NoticeTypeOptions" v-model:value="mainStore.panel.noticeType"
+                      style="width: 100px"></n-select>
+            <n-select
+                v-show="NoticeTypeOptions.find(item => item.value === mainStore.panel.noticeType).child.length !== 0"
+                size="small" :options="NoticeTypeOptions.find(item => item.value === mainStore.panel.noticeType).child"
+                v-model:value="mainStore.panel.cronNum" style="width: 100px"></n-select>
           </n-space>
-<!--          <n-space justify="center">-->
-<!--            提醒时间-->
-<!--            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.predictTime" placeholder="预计开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>-->
-<!--          </n-space>-->
+          <!--          <n-space justify="center">-->
+          <!--            提醒时间-->
+          <!--            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.predictTime" placeholder="预计开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>-->
+          <!--          </n-space>-->
         </n-space>
         <n-space justify="space-between" v-if="mainStore.panel.id !== 0" style="margin-bottom: 4px">
           <n-space justify="start" align="center">
             <n-button v-if="mainStore.panel.startDoTime === null" size="tiny" @click="startTodo">开始</n-button>
-            <div v-else>开始: {{mainStore.panel.startDoTime.replace('T', ' ')}}</div>
+            <div v-else>开始: {{ mainStore.panel.startDoTime.replace('T', ' ') }}</div>
           </n-space>
           <n-space justify="start" align="center">
-            <n-button v-if="mainStore.panel.endDoTime === null && mainStore.panel.startDoTime" size="tiny" @click="endTodo">结束</n-button>
-            <div v-if="mainStore.panel.endDoTime !== null && mainStore.panel.startDoTime">结束: {{mainStore.panel.endDoTime.replace('T', ' ')}}</div>
+            <n-button v-if="mainStore.panel.endDoTime === null && mainStore.panel.startDoTime" size="tiny"
+                      @click="endTodo">结束
+            </n-button>
+            <div v-if="mainStore.panel.endDoTime !== null && mainStore.panel.startDoTime">结束:
+              {{ mainStore.panel.endDoTime.replace('T', ' ') }}
+            </div>
           </n-space>
         </n-space>
-        <n-space v-if="mainStore.panel.endDoTime && mainStore.panel.startDoTime">总计: {{period}}</n-space>
+        <n-space v-if="mainStore.panel.endDoTime && mainStore.panel.startDoTime">总计: {{ period }}</n-space>
         <n-space vertical justify="space-around">
           <n-input placeholder="准备做点什么" v-model:value="mainStore.panel.title"/>
           <n-input
@@ -90,7 +109,8 @@
           ></n-input>
           <n-space>
             <n-space>
-              <n-select v-model:value="mainStore.panel.taskBoxId" size="small" style="width: 200px" :options="mainStore.taskListOptions"/>
+              <n-select v-model:value="mainStore.panel.taskBoxId" size="small" style="width: 200px"
+                        :options="mainStore.taskListOptions"/>
             </n-space>
           </n-space>
           <n-space justify="space-between">
@@ -161,8 +181,10 @@
         <n-space align="center" style="margin-bottom: 4px">
           <n-space align="center" justify="center">
             持续时间
-            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.planStartTime" placeholder="开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
-            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.planEndTime" placeholder="结束时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
+            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.planStartTime"
+                           placeholder="开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
+            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.planEndTime"
+                           placeholder="结束时间" default-formatted-value="00:00:00" size="small"></n-time-picker>
           </n-space>
         </n-space>
         <n-space align="center" style="margin-bottom: 4px">
@@ -170,29 +192,46 @@
             邮件提醒
             <n-switch v-model:value="mainStore.panel.enableEmail"/>
           </n-space>
+          <n-space align="center" justify="center">
+            IOS提醒
+            <n-switch v-model:value="mainStore.panel.enableIos"/>
+          </n-space>
+          <n-space align="center" justify="center">
+            安卓提醒
+            <n-switch v-model:value="mainStore.panel.enableAndroid"/>
+          </n-space>
         </n-space>
-        <n-space v-if="mainStore.panel.enableEmail" align="center">
+        <n-space v-if="mainStore.panel.enableEmail || mainStore.panel.enableIos || mainStore.panel.enableAndroid"
+                 align="center">
           <n-space align="center">
             提醒类型
-            <n-select size="small" :options="NoticeTypeOptions" v-model:value="mainStore.panel.noticeType" style="width: 100px"></n-select>
-            <n-select v-show="NoticeTypeOptions.find(item => item.value === mainStore.panel.noticeType).child.length !== 0" size="small" :options="NoticeTypeOptions.find(item => item.value === mainStore.panel.noticeType).child" v-model:value="mainStore.panel.cronNum" style="width: 100px"></n-select>
+            <n-select size="small" :options="NoticeTypeOptions" v-model:value="mainStore.panel.noticeType"
+                      style="width: 100px"></n-select>
+            <n-select
+                v-show="NoticeTypeOptions.find(item => item.value === mainStore.panel.noticeType).child.length !== 0"
+                size="small" :options="NoticeTypeOptions.find(item => item.value === mainStore.panel.noticeType).child"
+                v-model:value="mainStore.panel.cronNum" style="width: 100px"></n-select>
           </n-space>
-<!--          <n-space justify="center">-->
-<!--            提醒时间-->
-<!--            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.predictTime" placeholder="预计开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>-->
-<!--          </n-space>-->
+          <!--          <n-space justify="center">-->
+          <!--            提醒时间-->
+          <!--            <n-time-picker value-format="HH:mm:ss" v-model:formatted-value="mainStore.panel.predictTime" placeholder="预计开始时间" default-formatted-value="00:00:00" size="small"></n-time-picker>-->
+          <!--          </n-space>-->
         </n-space>
         <n-space justify="space-between" v-if="mainStore.panel.id !== 0" style="margin-bottom: 4px">
           <n-space justify="start" align="center">
             <n-button v-if="mainStore.panel.startDoTime === null" size="tiny" @click="startTodo">开始</n-button>
-            <div v-else>开始: {{mainStore.panel.startDoTime.replace('T', ' ')}}</div>
+            <div v-else>开始: {{ mainStore.panel.startDoTime.replace('T', ' ') }}</div>
           </n-space>
           <n-space justify="start" align="center">
-            <n-button v-if="mainStore.panel.endDoTime === null && mainStore.panel.startDoTime" size="tiny" @click="endTodo">结束</n-button>
-            <div v-if="mainStore.panel.endDoTime !== null && mainStore.panel.startDoTime">结束: {{mainStore.panel.endDoTime.replace('T', ' ')}}</div>
+            <n-button v-if="mainStore.panel.endDoTime === null && mainStore.panel.startDoTime" size="tiny"
+                      @click="endTodo">结束
+            </n-button>
+            <div v-if="mainStore.panel.endDoTime !== null && mainStore.panel.startDoTime">结束:
+              {{ mainStore.panel.endDoTime.replace('T', ' ') }}
+            </div>
           </n-space>
         </n-space>
-        <n-space v-if="mainStore.panel.endDoTime && mainStore.panel.startDoTime">总计: {{period}}</n-space>
+        <n-space v-if="mainStore.panel.endDoTime && mainStore.panel.startDoTime">总计: {{ period }}</n-space>
         <n-space vertical justify="space-around">
           <n-input placeholder="准备做点什么" v-model:value="mainStore.panel.title"/>
           <n-input
@@ -206,7 +245,8 @@
           ></n-input>
           <n-space>
             <n-space>
-              <n-select v-model:value="mainStore.panel.taskBoxId" size="small" style="width: 200px" :options="mainStore.taskListOptions"/>
+              <n-select v-model:value="mainStore.panel.taskBoxId" size="small" style="width: 200px"
+                        :options="mainStore.taskListOptions"/>
             </n-space>
           </n-space>
           <n-space justify="space-between">
